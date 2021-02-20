@@ -10,12 +10,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data  // Lombok helper that save us from the drudgery of creating various getters, setters, and constructors.
 @AllArgsConstructor  // Lombok helper ^
 @NoArgsConstructor  // Lombok helper ^
-public class Url {
+public class Location {
 
     @Id
-    private long id;
-    private String originalUrl;
-    private String shortUrl;
-    private int numberOfClicks;
-    private Location location;
+    private long longitude;
+    private long latitude;
+    private int zip;
+    private String country;
+    private String state;
+    private String city;
+    private String street;
 }
