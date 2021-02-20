@@ -1,10 +1,10 @@
-package com.margarine;
+package com.margarine.db;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(collectionResourceRel = "url", path = "url")
-public interface UrlRepository extends MongoRepository<Url, String> {
+@RepositoryRestResource(collectionResourceRel = "urls", itemResourceRel = "url", path = "urls")
+public interface UrlRepository extends MongoRepository<UrlItem, String> {
     /**
      * The MongoRepository superclass includes all the necessary code for reading and writing our domain class to and
      * from the database.

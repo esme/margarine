@@ -1,4 +1,4 @@
-package com.margarine;
+package com.margarine.server;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
