@@ -20,4 +20,17 @@ public class UrlItem {
     private String shortUrl;          // e.g. margarine.com/goo123
     private int numberOfClicks;       // shortUrl total click counter
     private ArrayList<ClickItem> clicks;  // array of all clicks that match to shortUrl
+
+    public UrlItem(long id, String originalUrl, String shortUrl){
+        this.id = id;
+        this.originalUrl = originalUrl;
+        this.shortUrl = shortUrl;
+        numberOfClicks = 0;
+        clicks = new ArrayList<>();
+    }
+
+    public void add(ClickItem clickItem) {
+        clicks.add(clickItem);
+        numberOfClicks++;
+    }
 }

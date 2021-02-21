@@ -13,11 +13,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class LocationItem {
 
     @Id
+    private long id;
     private long longitude;
     private long latitude;
-    private int zip;
-    private String country;
-    private String state;
-    private String city;
-    private String street;
+    //private String zip;  // must be String because integer types will truncate leading zeros
+    //private String country;
+    //private String state;
+    //private String city;
+    //private String street;
+
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }
