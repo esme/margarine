@@ -7,7 +7,7 @@ import java.util.Date;
 public class UrlDTO {
 
     @JsonProperty("originalUrl")
-    private String originalUrl;
+    private String originalUrl; // google.com
 
     @JsonProperty("longitude")
     private long longitude;
@@ -16,7 +16,7 @@ public class UrlDTO {
     private long latitude;
 
     @JsonProperty("timeClicked")
-    private Date timeClicked;
+    private Date timeClicked; // dd-MM-YYYY
 
 
     public String getOriginalUrl() {
