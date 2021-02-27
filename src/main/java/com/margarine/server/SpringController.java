@@ -22,7 +22,7 @@ public class SpringController {
 
 
     @RequestMapping(
-            value = "/url", method = RequestMethod.POST,
+            value = "/generate", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
