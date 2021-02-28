@@ -14,7 +14,6 @@ import java.util.Date;
 
 
 @RestController
-@RequestMapping("/")
 public class GenerateController {
 
 
