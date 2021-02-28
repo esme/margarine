@@ -1,18 +1,13 @@
 package com.margarine.server;
 
-import com.margarine.db.ClickItem;
-import com.margarine.db.LocationItem;
-import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/")
 public class ClickController {
 
     /**
@@ -26,16 +21,12 @@ public class ClickController {
     }
 
 
-
-
-
-
     @Autowired
     private UrlRepository urlRepository;
 
 
     @RequestMapping(
-            value = "/click", method = RequestMethod.POST,
+            value = "/click/**", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
