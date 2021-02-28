@@ -1,5 +1,6 @@
 package com.margarine.server;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margarine.db.ClickItem;
 import com.margarine.db.LocationItem;
 import com.margarine.db.UrlItem;
@@ -9,11 +10,45 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Date;
 
 
 @RestController
 @RequestMapping("/")
-public class SpringController {
+public class GenerateController {
+
+
+    private static class UrlDTO {
+
+        @JsonProperty("originalUrl")
+        private String originalUrl; // google.com
+
+        @JsonProperty("longitude")
+        private long longitude;
+
+        @JsonProperty("latitude")
+        private long latitude;
+
+        @JsonProperty("timeClicked")
+        private Date timeClicked; // dd-MM-YYYY
+
+
+        public String getOriginalUrl() {
+            return originalUrl;
+        }
+
+        public long getLongitude() {
+            return longitude;
+        }
+
+        public long getLatitude() {
+            return latitude;
+        }
+
+        public Date getTimeClicked() {
+            return timeClicked;
+        }
+    }
 
     private static long id = 0;
 
@@ -50,7 +85,7 @@ public class SpringController {
         }
         catch(org.springframework.dao.DuplicateKeyException e){
             System.out.print("DUPLICATE KEY FAILURE!");
-            return HttpStatus.CONFLICT;
+            return HttpStatus.;
         }
     }
 
