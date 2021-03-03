@@ -5,7 +5,7 @@ plugins {
 	id 'application'
 }
 
-group = 'com.example'
+group = 'com.margarine'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
@@ -16,8 +16,15 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	implementation 'org.springframework.boot:spring-boot-starter-web'           // adds web application functionality
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'  // adds mongodb functionality
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'     // adds rest api functionality
+    //implementation 'com.okta.spring:okta-spring-boot-starter:2.0.1'             // adds simple oauth/oidc authentication functionality
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    //implementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'          // adds an embedded in-memory mongodb for testing
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
 }
 
 test {
