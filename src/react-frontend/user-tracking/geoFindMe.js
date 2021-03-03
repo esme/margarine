@@ -8,9 +8,9 @@ async function getIP(){
   return data.ip;
 }
 
-async function sendData(latitude, longitude) {
-  const ip = await getIP();
-  const data = {ip, 'latitude': latitude, 'longitude': longitude};
+async function sendData(latitude, longitude, timestamp) {
+  const ip_address = await getIP();
+  const data = {ip_address, latitude, longitude, timestamp};
   console.log(1, data);
 
   // replace link with backend server API endpoint
@@ -32,12 +32,12 @@ function geoFindMe() {
   const status = document.querySelector('#status');
 
   function success(position) {
-    const latitude  = position.coords.latitude;
-    const longitude = position.coords.longitude;
+    const { latitude, longitude }  = position.coords;
+    const { timestamp } = position;
 
     status.textContent = '';
 
-    sendData(latitude, longitude);
+    sendData(latitude, longitude, timestamp);
   }
 
   function error() {
