@@ -5,12 +5,15 @@ import com.margarine.db.ClickItem;
 import com.margarine.db.LocationItem;
 import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
+import org.apache.tomcat.util.security.ConcurrentMessageDigest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Date;
+import org.apache.tomcat.util.security.MD5Encoder;
 
 
 @RestController
@@ -49,6 +52,8 @@ public class GenerateController {
         }
     }
 
+    private static final Logger LOGGER=LoggerFactory.getLogger(GenerateController.class);
+
     private static long id = 0;
 
     @Autowired
@@ -67,25 +72,35 @@ public class GenerateController {
          * 2. If it does not already exist, create a LocationItem A, then a ClickItem B(A), then a UrlItem C(B)
          * 3. Store the UrlItem in the database
          */
+        String uniqueId = String.valueOf(id++); // set ID then increment
+        LOGGER.info("SET UNIQUE_ID: " + uniqueId);
+
         String shortUrl = generateShortUrl(request.getOriginalUrl());  // Try to generate a short URL
+        LOGGER.info("GENERATED SHORT_URL: " + shortUrl);
 
-        LocationItem locationItem = new LocationItem(id, request.getLongitude(), request.getLatitude()); // Capture where the click came from
+        LocationItem locationItem = new LocationItem(uniqueId, request.getLongitude(), request.getLatitude()); // Capture where the click came from
+        LOGGER.info("SET LATITUDE: " + locationItem.getLatitude() + ", LONGITUDE: " + locationItem.getLongitude());
 
-        ClickItem clickItem = new ClickItem(id, shortUrl, locationItem, request.getTimeClicked()); // Capture the click
+        ClickItem clickItem = new ClickItem(uniqueId, locationItem, request.getTimeClicked()); // Capture the click
+        LOGGER.info("SET CLICK_TIME: " + clickItem.getTimeClicked());
 
-        UrlItem urlItem = new UrlItem(id, request.getOriginalUrl(), shortUrl); // Create the UrlItem to store in DB
+        UrlItem urlItem = new UrlItem(uniqueId, request.getOriginalUrl(), shortUrl); // Create the UrlItem to store in DB
+        LOGGER.info("CREATED NEW URL_ITEM { " + urlItem.toString() + " }.");
 
         urlItem.add(clickItem); // Save the click that created the UrlItem
 
-        try{
-            urlRepository.save(urlItem);
-            id++;
-            return HttpStatus.ACCEPTED;
+        while (true) {
+            try{
+                urlRepository.save(urlItem);
+                LOGGER.info("URL_ITEM { " + urlItem.toString() + " } WAS SAVED TO THE DATABASE.");
+                break;
+            }
+            catch(org.springframework.dao.DuplicateKeyException e){
+                LOGGER.error("DUPLICATE KEY ERROR: INCREMENTING ID AND TRYING AGAIN.");
+                return HttpStatus.CONFLICT;
+            }
         }
-        catch(org.springframework.dao.DuplicateKeyException e){
-            System.out.print("DUPLICATE KEY FAILURE!");
-            return HttpStatus.;
-        }
+        return HttpStatus.ACCEPTED;
     }
 
 
@@ -110,11 +125,20 @@ public class GenerateController {
         try{
             // TODO Check DB for originalUrl
             // TODO Generate and return short URL
-            return "" + String.valueOf(id);
-        }catch (Exception err) {
-            System.out.print("URL already exists.");
+
+            //option1
+            //String shortUrl = DigestUtils.md5DigestAsHex(originalUrl.getBytes());
+
+            //option 2
+            String urlMd5Hash = MD5Encoder.encode(ConcurrentMessageDigest.digestMD5(originalUrl.getBytes()));
+            String shortUrl = urlMd5Hash.substring(0, 6);
+            LOGGER.info("GENERATED 6 CHARACTER MD5 HASH FROM URL '" + originalUrl + "'.");
+            return shortUrl;
         }
-        return "";
+        catch (Exception err) {
+            LOGGER.error(err.getMessage());
+            return "";
+        }
     }
 
 }
