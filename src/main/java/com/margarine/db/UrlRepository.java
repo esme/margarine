@@ -2,7 +2,9 @@ package com.margarine.db;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.stereotype.Repository;
 
+@Repository
 @RepositoryRestResource(collectionResourceRel = "url", path = "url")
 public interface UrlRepository extends MongoRepository<UrlItem, String> {
     /**
