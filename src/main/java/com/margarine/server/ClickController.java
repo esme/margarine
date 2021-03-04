@@ -30,7 +30,7 @@ public class ClickController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public @ResponseBody HttpStatus clickShortUrl(@RequestBody UrlDTO request) {
+    public @ResponseBody HttpStatus clickShortUrl(@RequestBody ClickDTO request) {
 
         /*
          * TODO IMPLEMENT THIS
