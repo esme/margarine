@@ -10,8 +10,10 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.static(path.join(__dirname, "..", "user-tracking")));
 
 app.post('/test', (req, res) => {
-  console.log(req.body);
-  res.send();
+  console.log(2, req.body);
+  const payload = {'longUrl': 'https://google.com'};
+  console.log(3, payload);
+  res.send(payload);
 });
 
 app.get("*", (req, res) => {

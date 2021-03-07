@@ -2,30 +2,42 @@ window.addEventListener('load', (event) => {
   geoFindMe();
 });
 
+async function getIP(){
+  const response = await fetch('https://api.ipify.org?format=json');
+  const data = await response.json();
+  return data.ip;
+}
+
+async function sendData(latitude, longitude, timestamp) {
+  const ip_address = await getIP();
+  const data = {ip_address, latitude, longitude, timestamp};
+  console.log(1, data);
+
+  // replace link with backend server API endpoint
+  fetch('http://localhost:3000/test', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+  .then(response => response.json())
+  // redirect to long url
+  // .then(data => {
+  //   window.location.href = data.longUrl;
+  // });
+}
+
 function geoFindMe() {
   const status = document.querySelector('#status');
-  const mapLink = document.querySelector('#map-link');
-
-  mapLink.href = '';
-  mapLink.textContent = '';
 
   function success(position) {
-    const latitude  = position.coords.latitude;
-    const longitude = position.coords.longitude;
+    const { latitude, longitude }  = position.coords;
+    const { timestamp } = position;
 
     status.textContent = '';
-    mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
-    mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
 
-    // replace link with backend server
-    fetch('http://localhost:3000/test', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({'latitude': latitude, 'longitude': longitude}),
-    })
-    .then(response => console.log(response))
+    sendData(latitude, longitude, timestamp);
   }
 
   function error() {
