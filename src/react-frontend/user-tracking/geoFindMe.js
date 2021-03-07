@@ -22,10 +22,10 @@ async function sendData(latitude, longitude, timestamp) {
     body: JSON.stringify(data),
   })
   .then(response => response.json())
-  .then(data => {
-    // redirect to long url
-    window.location.href = data.longUrl;
-  });
+  // redirect to long url
+  // .then(data => {
+  //   window.location.href = data.longUrl;
+  // });
 }
 
 function geoFindMe() {
