@@ -16,7 +16,7 @@ const Shortener = () => {
   return (
     <>
       <h1 className="headerText">Welcome to Margarine!</h1>
-      <p>Start shortening your links with the form below:</p>
+      <div>Start shortening your links with the form below:</div>
       <div className="form">
         <input
           className="inputRounded inputText"
@@ -34,7 +34,7 @@ const Shortener = () => {
           onChange={e => setCompany(e.target.value)}
         />
         <br />
-        <p>Customize your link:</p>
+        <div className="formText">Customize your link:</div>
         <div
           style={{display: 'flex'}}
         >
@@ -60,7 +60,8 @@ const Shortener = () => {
           type="button"
           onClick={sendData}
         />
-        <p>Get your shortened URL:</p>
+        <br />
+        <div className="formText">Get your shortened URL:</div>
         <input
           className="inputRounded inputText"
           value="margarine.com/123"
