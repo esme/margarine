@@ -1,33 +1,45 @@
 import './App.css';
-import axios from 'axios';
-import { useState } from 'react';
-
-const REST_API_URL = 'http://localhost:8080/greeting';
-
-const Shortener = () => {
-  const [data, setData] = useState('Margarine');
-
-  const fetchData = async () => {
-    const res = await axios.get(REST_API_URL);
-    setData(res.data.content);
-  }
-
-  return (
-    <>
-      <h1>{data}</h1>
-      <input
-        type="button"
-        value="Get data"
-        onClick={fetchData}
-      ></input>
-    </>
-  );
-}
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import Dashboard from './Dashboard';
+import Shortener from './Shortener';
+import Background from './images/margarinebg.jpg'
+import Logo from './images/margarinelogo.png'
 
 function App() {
   return (
     <div className="App">
-      <Shortener />
+      <div className="bg"
+        style={{
+          backgroundImage: `url(${Background})`,
+        }}
+      >
+        <BrowserRouter>
+          <Switch>
+            <Route path="/dashboard">
+              <div className="header">
+                <img alt="logo" src={Logo}>
+                </img>
+              </div>
+              <Dashboard />
+            </Route>
+            <Route path="/">
+              <div className="header">
+                <div></div>
+                <img alt="logo" src={Logo}>
+                </img>
+                <div>
+                  <input
+                    className="inputRounded inputButton inputDashboard"
+                    value="Dashboard"
+                    type="button"
+                  />
+                </div>
+              </div>
+              <Shortener />
+            </Route>
+          </Switch>
+        </BrowserRouter>
+      </div>
     </div>
   );
 }

@@ -22,7 +22,12 @@ React Frontend server
 ```
 cd src/react-frontend/
 yarn install
+
+# Option 1: to create a production build of the app and serve files on NodeJS server
 yarn start
+
+# Option 2: to start frontend client only
+yarn start-client
 ```
 
 ## Frontend Routing
