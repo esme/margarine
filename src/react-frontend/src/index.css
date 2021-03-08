@@ -14,5 +14,10 @@ code {
 
 @font-face {
   font-family: "Rockwell";
-  src: local("Rockwell"), url("./fonts/ROCK.ttf") format("truetype");
+  src: local("Rockwell"), url("./fonts/ROCK.TTF") format("truetype");
+}
+
+@font-face {
+  font-family: "Ebrima";
+  src: local("Ebrima"), url("./fonts/ebrima.ttf") format("truetype");
 }

@@ -1,6 +1,6 @@
 .App {
   text-align: center;
-  font-family: 'Montserrat';
+  font-family: Ebrima;
 }
 
 .App-logo {
@@ -38,12 +38,23 @@
   }
 }
 
+.form {
+  margin: 20px auto 0 auto;
+  width: 25%;
+}
+
 .inputRounded {
   border-radius: 50px;
   background-color: #FFFFFF;
   border: 1px solid #DDDDDD;
   padding: 10px 14px;
   cursor:text;
+  margin-top: 15px;
+}
+
+.inputText {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .inputDashboard {
@@ -104,4 +115,6 @@ input:focus {
 
 .headerText {
   font-family: Rockwell;
+  color: #D4A400;
+  margin-top: 60px;
 }

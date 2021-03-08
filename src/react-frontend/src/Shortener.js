@@ -15,53 +15,68 @@ const Shortener = () => {
 
   return (
     <>
-      <h1 className="headerText">Welcome to Margarine</h1>
-      <input
-        className="inputRounded"
-        placeholder="Enter your URL"
-        value={longUrl}
-        type="text"
-        onChange={e => setLongUrl(e.target.value)}
-      />
-      <br/>
-      <input
-        className="inputRounded"
-        placeholder="Your Company Name"
-        value={company}
-        type="text"
-        onChange={e => setCompany(e.target.value)}
-      />
-      <br/>
-      <p>Customize your link</p>
-      <input
-        className="inputRounded"
-        value="margarine.com"
-        type="text"
-        disabled
-      />
-      <input
-        className="inputRounded"
-        placeholder=""
-        value={customUrl}
-        type="text"
-        onChange={e => setCustomUrl(e.target.value)}
-      />
-      <br/>
-      <p>Get your shortened URL</p>
-      <input
-        className="inputRounded"
-        value="margarine.com/123"
-        type="text"
-        disabled
-      />
-      <br/>
-      <br/>
-      <input
-        className="inputRounded inputButton"
-        value="Shorten"
-        type="button"
-        onClick={sendData}
-      />
+      <h1 className="headerText">Welcome to Margarine!</h1>
+      <p>Start shortening your links with the form below:</p>
+      <div className="form">
+        <input
+          className="inputRounded inputText"
+          placeholder="Enter your URL"
+          value={longUrl}
+          type="text"
+          onChange={e => setLongUrl(e.target.value)}
+        />
+        <br />
+        <input
+          className="inputRounded inputText"
+          placeholder="Your Company Name"
+          value={company}
+          type="text"
+          onChange={e => setCompany(e.target.value)}
+        />
+        <br />
+        <p>Customize your link:</p>
+        <div
+          style={{display: 'flex'}}
+        >
+          <input
+            style={{marginRight: '20px'}}
+            className="inputRounded inputText"
+            value="margarine.com"
+            type="text"
+            disabled
+          />
+          <input
+            className="inputRounded inputText"
+            placeholder=""
+            value={customUrl}
+            type="text"
+            onChange={e => setCustomUrl(e.target.value)}
+          />
+        </div>
+        <br />
+        <input
+          className="inputRounded inputButton"
+          value="Shorten"
+          type="button"
+          onClick={sendData}
+        />
+        <p>Get your shortened URL:</p>
+        <input
+          className="inputRounded inputText"
+          value="margarine.com/123"
+          type="text"
+          disabled
+        />
+        <br/>
+        <br/>
+        <input
+          style={{backgroundColor: '#FFE48A'}}
+          className="inputRounded inputButton"
+          value="Do Another"
+          type="button"
+          onClick={sendData}
+        />
+      </div>
     </>
   );
 }
