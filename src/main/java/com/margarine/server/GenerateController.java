@@ -19,7 +19,6 @@ import org.apache.tomcat.util.security.MD5Encoder;
 @RestController
 public class GenerateController {
 
-
     private static class UrlDTO {
 
         @JsonProperty("originalUrl")
@@ -89,16 +88,13 @@ public class GenerateController {
 
         urlItem.add(clickItem); // Save the click that created the UrlItem
 
-        while (true) {
-            try{
-                urlRepository.save(urlItem);
-                LOGGER.info("URL_ITEM { " + urlItem.toString() + " } WAS SAVED TO THE DATABASE.");
-                break;
-            }
-            catch(org.springframework.dao.DuplicateKeyException e){
-                LOGGER.error("DUPLICATE KEY ERROR: INCREMENTING ID AND TRYING AGAIN.");
-                return HttpStatus.CONFLICT;
-            }
+        try{
+            urlRepository.save(urlItem);
+            LOGGER.info("URL_ITEM { " + urlItem.toString() + " } WAS SAVED TO THE DATABASE.");
+        }
+        catch(org.springframework.dao.DuplicateKeyException e){
+            LOGGER.error("DUPLICATE KEY ERROR: INCREMENTING ID AND TRYING AGAIN.");
+            return HttpStatus.CONFLICT;
         }
         return HttpStatus.ACCEPTED;
     }
