@@ -13,14 +13,12 @@ import java.util.Date;
 public class ClickItem {
 
     @Id
-    private long id;            // random unique object identifier
-    private String url;         // some user-clicked url that mapped to margarine web app wildcard URI tracker
+    private String id;            // random unique object identifier
     private LocationItem location;  // location of user who clicked url
     private Date timeClicked;
 
-    public ClickItem (long id, String url, LocationItem location, Date timeClicked) {
+    public ClickItem (String id, LocationItem location, Date timeClicked) {
         this.id = id;
-        this.url = url;
         this.location = location;
         this.timeClicked = timeClicked;
     }
