@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.ArrayList;
 
@@ -15,8 +16,8 @@ import java.util.ArrayList;
 @NoArgsConstructor  // Lombok helper ^
 public class UrlItem {
 
-    @Id
-    private String id;                  // random unique object identifier
+    //@Id
+    //private String id;                  // random unique object identifier
 
     @Indexed(name = "original_url_index", unique=true)
     private String originalUrl;       // e.g. google.com
@@ -26,11 +27,12 @@ public class UrlItem {
 
     private int numberOfClicks;       // shortUrl total click counter
 
+    @DBRef
     private ArrayList<ClickItem> clicks;  // array of all clicks that match to shortUrl
 
 
     public UrlItem(String id, String originalUrl, String shortUrl){
-        this.id = id;
+        //this.id = id;
         this.originalUrl = originalUrl;
         this.shortUrl = shortUrl;
         numberOfClicks = 0;
@@ -45,12 +47,12 @@ public class UrlItem {
     @Override
     public String toString() {
         return String.format(
-                "UrlItem[id=%s, " +
+                "UrlItem[id=NULL, " +
                         "originalUrl='%s', " +
                         "shortUrl='%s" +
                         "numberOfClicks=%s" +
                         "clicks=%s" +
                         "']",
-                id, originalUrl, shortUrl, numberOfClicks, clicks.toString());
+                originalUrl, shortUrl, numberOfClicks, clicks.toString());
     }
 }
