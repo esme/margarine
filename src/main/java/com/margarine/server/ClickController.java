@@ -26,7 +26,7 @@ public class ClickController {
 
 
     @RequestMapping(
-            value = "/click/**", method = RequestMethod.POST,
+            value = "/click", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
