@@ -55,8 +55,7 @@ public class GenerateController {
 
     private static long id = 0;
 
-    @Autowired
-    private UrlRepository urlRepository;
+    @Autowired private UrlRepository urlRepository;
 
 
     @RequestMapping(
@@ -93,7 +92,7 @@ public class GenerateController {
             LOGGER.info("URL_ITEM { " + urlItem.toString() + " } WAS SAVED TO THE DATABASE.");
         }
         catch(org.springframework.dao.DuplicateKeyException e){
-            LOGGER.error("DUPLICATE KEY ERROR: INCREMENTING ID AND TRYING AGAIN.");
+            LOGGER.error("DUPLICATE KEY ERROR: PLEASE TRY DIFFERENT KEY.");
             return HttpStatus.CONFLICT;
         }
         return HttpStatus.ACCEPTED;
@@ -121,6 +120,9 @@ public class GenerateController {
         try{
             // TODO Check DB for originalUrl
             // TODO Generate and return short URL
+
+            // try fetching the document from Mongo containing the specified originalUrl
+            //urlRepository.findById()
 
             //option1
             //String shortUrl = DigestUtils.md5DigestAsHex(originalUrl.getBytes());
