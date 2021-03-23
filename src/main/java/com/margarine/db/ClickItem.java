@@ -13,20 +13,12 @@ import java.util.Date;
 //@NoArgsConstructor  // Lombok helper ^
 public class ClickItem {
 
-    @Id private String id; // random unique object identifier
-    @Transient private static int counter = 0;
-
+    @Id private String id;
     private Date timeClicked;
     private long longitude;
     private long latitude;
 
     public ClickItem (long longitude, long latitude, Date timeClicked) {
-        if (counter == 0){
-            this.id = String.valueOf(counter++);
-        }
-        else{
-            this.id = String.valueOf(++counter);
-        }
         this.longitude = longitude;
         this.latitude = latitude;
         this.timeClicked = timeClicked;
