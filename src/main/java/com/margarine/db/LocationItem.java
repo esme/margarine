@@ -13,12 +13,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor  // Lombok helper ^
 public class LocationItem {
 
-    @Id
-    private String id;
     private long longitude;
     private long latitude;
-
-    public void setId(String id) {
-        this.id = id;
-    }
 }
