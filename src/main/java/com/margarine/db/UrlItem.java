@@ -22,7 +22,7 @@ public class UrlItem {
     @Indexed(name = "original_url_index", unique=true)
     private String originalUrl;       // e.g. google.com
 
-    @Indexed(name = "short_url_index", unique=true)
+    @Id @Indexed(name = "short_url_index")
     private String shortUrl;          // e.g. margarine.com/goo123
 
     private int numberOfClicks;       // shortUrl total click counter
