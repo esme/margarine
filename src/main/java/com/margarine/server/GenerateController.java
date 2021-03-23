@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import java.util.Date;
+import java.util.Optional;
+
 import org.apache.tomcat.util.security.MD5Encoder;
 
 
@@ -99,23 +101,11 @@ public class GenerateController {
     }
 
 
-    @RequestMapping(
-            value = "/test", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE
-    )
-    public @ResponseBody HttpStatus test(@RequestBody final UrlDTO request) {
-
-        System.out.printf("ORIG_URL=%S\nLONGITUDE=%S\nLATITUDE=%S\nTIME_CLICKED=%S",
-                request.getOriginalUrl(),
-                request.getLongitude(),
-                request.getLatitude(),
-                request.getTimeClicked());
-
-        return HttpStatus.ACCEPTED;
-    }
-
-
+    /**
+     *
+     * @param originalUrl
+     * @return
+     */
     private String generateShortUrl (String originalUrl) {
         try{
             // TODO Check DB for originalUrl
@@ -138,5 +128,53 @@ public class GenerateController {
             return "";
         }
     }
+
+
+    /**
+     * Basic method for testing the server's ability to intake a payload as specified by the RequestBody annotation
+     * @param request Defines the payload that the server should echo
+     * @return Returns ACCEPTED if the test succeeded. Otherwise throws nonsense (heh).
+     */
+    @RequestMapping(
+            value = "/test/print", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    public @ResponseBody HttpStatus testPrint(@RequestBody final UrlDTO request) {
+
+        try{
+            System.out.printf("ORIG_URL=%S\nLONGITUDE=%S\nLATITUDE=%S\nTIME_CLICKED=%S",
+                    request.getOriginalUrl(),
+                    request.getLongitude(),
+                    request.getLatitude(),
+                    request.getTimeClicked());
+
+            return HttpStatus.ACCEPTED;
+        }
+        catch (NullPointerException err) {
+
+            return HttpStatus.I_AM_A_TEAPOT;
+        }
+    }
+
+    /**
+     * Basic query method to fetch UrlItems from the database by index.
+     * e.g. Using a web browser: http://localhost:8080/get?short_url=af7335
+     * e.g. Using the HTTPie tool: http GET :8080 /get?short_url=af7335
+     * @param short_url Specifies the short_url that should be searched for
+     * @return Returns the UrlItem wrapped in JSON if it exists. Otherwise returns an HTTP error code.
+     */
+    @RequestMapping(
+            value = "/get", method = RequestMethod.GET
+    )
+    public @ResponseBody Object findByShortLink(@RequestParam String short_url) {
+
+        Optional<UrlItem> match = urlRepository.findById(short_url);
+        if (match.isPresent()) {
+            return match.get(); // returns a UrlItem wrapped in JSON if the document exists
+        }
+        else return HttpStatus.NOT_FOUND; // otherwise returns NOT_FOUND
+    }
+
 
 }
