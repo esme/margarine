@@ -164,12 +164,29 @@ public class GenerateController {
      * @param short_url Specifies the short_url that should be searched for
      * @return Returns the UrlItem wrapped in JSON if it exists. Otherwise returns an HTTP error code.
      */
-    @RequestMapping(
-            value = "/get", method = RequestMethod.GET
-    )
+    @RequestMapping(value = "/get", method = RequestMethod.GET)
     public @ResponseBody Object findByShortLink(@RequestParam String short_url) {
 
         Optional<UrlItem> match = urlRepository.findById(short_url);
+        if (match.isPresent()) {
+            return match.get(); // returns a UrlItem wrapped in JSON if the document exists
+        }
+        else return HttpStatus.NOT_FOUND; // otherwise returns NOT_FOUND
+    }
+
+
+    /**
+     * Basic query method to fetch UrlItems from the database by index.
+     * e.g. Using a web browser: http://localhost:8080/af7335 --> returns {"originalUrl":"test0.com","shortUrl":"af7335-
+     *                                                                     ","numberOfClicks":1,"clicks":[null]}
+     * @param shortUrl This is a wildcard path variable that should correlate to the shortUrl the user is trying to fet-
+     *                 ch information on.
+     * @return Returns the UrlItem wrapped in JSON if it exists. Otherwise returns an HTTP error code.
+     */
+    @RequestMapping(value = "/{shortUrl}", method = RequestMethod.GET)
+    public @ResponseBody Object getShortUrl(@PathVariable("shortUrl") String shortUrl) {
+
+        Optional<UrlItem> match = urlRepository.findById(shortUrl);
         if (match.isPresent()) {
             return match.get(); // returns a UrlItem wrapped in JSON if the document exists
         }
