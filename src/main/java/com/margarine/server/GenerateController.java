@@ -119,9 +119,6 @@ public class GenerateController {
             // TODO Check DB for originalUrl
             // TODO Generate and return short URL
 
-            // try fetching the document from Mongo containing the specified originalUrl
-            //urlRepository.findById()
-
             //option1
             //String shortUrl = DigestUtils.md5DigestAsHex(originalUrl.getBytes());
 
