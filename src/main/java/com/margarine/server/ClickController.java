@@ -6,6 +6,8 @@ import com.margarine.db.LocationItem;
 import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -60,6 +62,8 @@ public class ClickController {
         
     }
     
+    private static final Logger LOGGER=LoggerFactory.getLogger(ClickController.class);
+    
     private static long id = 0;
 
     @Autowired
@@ -74,11 +78,16 @@ public class ClickController {
     public @ResponseBody HttpStatus clickShortUrl(@RequestBody ClickDTO request) {
         
         String uniqueId = String.valueOf(id++);
+        LOGGER.info("SET UNIQUE_ID: " + uniqueId);
         
         LocationItem locationItem = new LocationItem(uniqueId, request.getLongitude(), request.getLatitude());
+        LOGGER.info("SET LATITUDE: " + locationItem.getLatitude() + ", LONGITUDE: " + locationItem.getLongitude());
+        
         ClickItem clickItem = new ClickItem(uniqueId, locationItem, request.getTimeClicked());
+        LOGGER.info("SET CLICK_TIME: " + clickItem.getTimeClicked());
         
         UrlItem urlItem = urlRepository.findUrlItemByShortUrl(request.getShortUrl());
+        LOGGER.info("FOUND URL_ITEM { " + urlItem.toString() + " }.");
         
         updateClickList(urlItem, clickItem);
 
@@ -91,5 +100,3 @@ public class ClickController {
     }
 
 }
-
-
