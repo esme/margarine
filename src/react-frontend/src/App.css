@@ -133,3 +133,7 @@ input:focus {
   display: flex;
   justify-content: space-between;
 }
+
+.map {
+  padding: 20px 0 30px 0;
+}

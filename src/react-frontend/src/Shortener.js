@@ -41,7 +41,7 @@ const Shortener = () => {
           <input
             style={{marginRight: '20px'}}
             className="inputRounded inputText"
-            value="margarine.com"
+            value="margarine.com/"
             type="text"
             disabled
           />

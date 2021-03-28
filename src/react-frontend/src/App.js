@@ -35,6 +35,7 @@ function App() {
                   className="inputRounded inputButton inputDashboard"
                   value="Homepage"
                   type="button"
+                  onClick={() => window.location.href="/"}
                 />
               </Header>
               <Dashboard />
@@ -45,6 +46,7 @@ function App() {
                   className="inputRounded inputButton inputDashboard"
                   value="Dashboard"
                   type="button"
+                  onClick={() => window.location.href="/dashboard"}
                 />
               </Header>
               <Shortener />

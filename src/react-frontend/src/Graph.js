@@ -35,28 +35,30 @@ class Graph extends Component {
     var bufferLong = distanceLong * 0.15;
     return (
       <>
-        <MapContainer
-          style={{ height: "420px", width: "80%", margin: '0 auto' }}
-          zoom={1}
-          center={[centerLat, centerLong]}
-          bounds={[
-            [data.minLat - bufferLat, data.minLong - bufferLong],
-            [data.maxLat + bufferLat, data.maxLong + bufferLong]
-          ]}
-        >
-          <TileLayer url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          {data.city.map((city, k) => {
-            return (
-              <CircleMarker
-                key={k}
-                center={[city["coordinates"][1], city["coordinates"][0]]}
-                radius={20 * Math.log(city["population"] / 10000000)}
-                fillOpacity={0.5}
-                stroke={false}
-              />)
-          })
-          }
-        </MapContainer>
+        <div className="map">
+          <MapContainer
+            style={{ height: "420px", width: "80%", margin: '0 auto' }}
+            zoom={1}
+            center={[centerLat, centerLong]}
+            bounds={[
+              [data.minLat - bufferLat, data.minLong - bufferLong],
+              [data.maxLat + bufferLat, data.maxLong + bufferLong]
+            ]}
+          >
+            <TileLayer url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            {data.city.map((city, k) => {
+              return (
+                <CircleMarker
+                  key={k}
+                  center={[city["coordinates"][1], city["coordinates"][0]]}
+                  radius={20 * Math.log(city["population"] / 10000000)}
+                  fillOpacity={0.5}
+                  stroke={false}
+                />)
+            })
+            }
+          </MapContainer>
+        </div>
       </>
     );
   }
