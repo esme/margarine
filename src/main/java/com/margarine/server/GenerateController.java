@@ -124,7 +124,8 @@ public class GenerateController {
 
             //option 2
             String urlMd5Hash = MD5Encoder.encode(ConcurrentMessageDigest.digestMD5(originalUrl.getBytes()));
-            String shortUrl = DOMAIN_NAME + "/" + urlMd5Hash.substring(0, 6);
+            //String shortUrl = DOMAIN_NAME + "/" + urlMd5Hash.substring(0, 6);
+            String shortUrl = urlMd5Hash.substring(0, 6);
             LOGGER.info("GENERATED 6 CHARACTER MD5 HASH FROM URL '" + originalUrl + "'.");
             return shortUrl;
         }
@@ -190,7 +191,8 @@ public class GenerateController {
      */
     @RequestMapping(value = "/{shortUrl}", method = RequestMethod.GET)
     public @ResponseBody Object getShortUrl(@PathVariable("shortUrl") String shortUrl) {
-
+        LOGGER.info("Received request: /{shortUrl}");
+        LOGGER.info("getShortUrl > PathVariable 'shortUrl' = " + shortUrl);
         Optional<UrlItem> match = urlRepository.findById(shortUrl);
         if (match.isPresent()) {
             return match.get(); // returns a UrlItem wrapped in JSON if the document exists
