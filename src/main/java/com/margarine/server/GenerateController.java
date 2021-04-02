@@ -133,6 +133,11 @@ public class GenerateController {
      * @return A JSON payload containing the original URL and short URL
      */
     private String generateShortUrl (String originalUrl) {
+
+        if (getShortUrl(originalUrl) == originalUrl){
+            return "KEY_ALREADY_EXISTS";
+        }
+
         try{
 
             //option 1 - MD5
@@ -143,6 +148,8 @@ public class GenerateController {
 
             // option2 - SHA1  (if hash collision)
             if (getShortUrl(shortUrl) != HttpStatus.NOT_FOUND) {
+                // this is saying "if the shortUrl we just created already exists in the DB, and its not just a
+                // duplicate, then we have a hash collision", i.e. two originalUrl values hashed to the same value
                 String urlSha1Hash = MD5Encoder.encode(ConcurrentMessageDigest.digestSHA1(originalUrl.getBytes()));
                 shortUrl = urlSha1Hash.substring(0, 6);
             }
