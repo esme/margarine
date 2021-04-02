@@ -2,10 +2,8 @@ package com.margarine.server;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margarine.db.ClickItem;
-import com.margarine.db.LocationItem;
 import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
-import net.minidev.json.JSONObject;
 import org.apache.tomcat.util.security.ConcurrentMessageDigest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,26 +14,32 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
-
 import org.apache.tomcat.util.security.MD5Encoder;
 
 
 @RestController
 public class GenerateController {
 
+    // specifies http request body that user most provide to invoke generate function
     private static class UrlDTO {
 
-        @JsonProperty("originalUrl")
+        @JsonProperty(value = "originalUrl", required = true)
         private String originalUrl; // google.com
 
-        @JsonProperty("longitude")
+        @JsonProperty(value = "longitude", required = true)
         private long longitude;
 
-        @JsonProperty("latitude")
+        @JsonProperty(value = "latitude", required = true)
         private long latitude;
 
-        @JsonProperty("timeClicked")
+        @JsonProperty(value = "timeClicked", required = true)
         private Date timeClicked; // dd-MM-YYYY
+
+        @JsonProperty(value = "company", required = false)
+        private String company;
+
+        @JsonProperty(value = "shortUrl", required = false)
+        private String shortUrl;
 
 
         public String getOriginalUrl() {
@@ -53,14 +57,20 @@ public class GenerateController {
         public Date getTimeClicked() {
             return timeClicked;
         }
+
+        public String getCompany() {
+            return company;
+        }
+
+        public String getShortUrl() {
+            return shortUrl;
+        }
     }
 
+    // log to spring boot console using this object
     private static final Logger LOGGER=LoggerFactory.getLogger(GenerateController.class);
 
-    private static long id = 0;
-
-    private static final String DOMAIN_NAME = "margarine.com";
-
+    // read or write from database using this object
     @Autowired private UrlRepository urlRepository;
 
 
@@ -77,21 +87,41 @@ public class GenerateController {
          * 3. Store the UrlItem in the database
          */
 
-        String shortUrl = generateShortUrl(request.getOriginalUrl());  // Try to generate a short URL
-        LOGGER.info("GENERATED SHORT_URL: " + shortUrl);
+        String shortUrl = request.getShortUrl();
 
-        ClickItem clickItem = new ClickItem(request.getLongitude(), request.getLatitude(), request.getTimeClicked()); // Capture the click
+        // only try to generate a shortUrl if not specified in the DTO/request
+        if (request.getShortUrl() == null) {
+            shortUrl = generateShortUrl(request.getOriginalUrl());  // Try to generate a short URL
+            LOGGER.info("GENERATED SHORT_URL: " + shortUrl);
+        }
+
+        // *STOP* if shortUrl already stored in DB
+        if (getShortUrl(shortUrl) != HttpStatus.NOT_FOUND) {
+            LOGGER.error("KEY ALREADY EXISTS: PLEASE TRY A DIFFERENT URL.");
+            return HttpStatus.ALREADY_REPORTED;
+        }
+
+        // record the first click item as the person who generated the click item
+        ClickItem clickItem = new ClickItem(request.getLongitude(), request.getLatitude(), request.getTimeClicked());
         LOGGER.info("LATITUDE: " + clickItem.getLatitude()
                 + ", LONGITUDE: " + clickItem.getLongitude()
                 + ", CLICK_TIME: " + clickItem.getTimeClicked());
 
-        UrlItem urlItem = new UrlItem(request.getOriginalUrl(), shortUrl); // Create the UrlItem to store in DB
+        // create the UrlItem to store in DB
+        UrlItem urlItem = new UrlItem(request.getOriginalUrl(), shortUrl);
         LOGGER.info("CREATED NEW URL_ITEM { " + urlItem.toString() + " }.");
 
-        urlItem.add(clickItem); // Save the click that created the UrlItem
+        // set the company if the parameter was included in the DTO
+        if (request.getCompany() != null) {
+            urlItem.setCompany(request.getCompany());
+            LOGGER.info("SET COMPANY NAME { " + urlItem.toString() + " }.");
+        }
+
+        // record the click
+        urlItem.add(clickItem);
 
         try{
-            // record the new shortUrl document in the database
+            // store the new shortUrl document in the database
             urlRepository.save(urlItem);
             LOGGER.info("URL_ITEM { " + urlItem.toString() + " } WAS SAVED TO THE DATABASE.");
 
@@ -110,23 +140,30 @@ public class GenerateController {
 
 
     /**
-     *
-     * @param originalUrl
-     * @return
+     * Generates short URLs
+     * @param originalUrl This is the original URL to which the short URL will be related
+     * @return A JSON payload containing the original URL and short URL
      */
     private String generateShortUrl (String originalUrl) {
+
+        if (getShortUrl(originalUrl) == originalUrl){
+            return "KEY_ALREADY_EXISTS";
+        }
+
         try{
-            // TODO Check DB for originalUrl
-            // TODO Generate and return short URL
-
-            //option1
-            //String shortUrl = DigestUtils.md5DigestAsHex(originalUrl.getBytes());
-
-            //option 2
+            //option 1 - MD5
             String urlMd5Hash = MD5Encoder.encode(ConcurrentMessageDigest.digestMD5(originalUrl.getBytes()));
-            //String shortUrl = DOMAIN_NAME + "/" + urlMd5Hash.substring(0, 6);
             String shortUrl = urlMd5Hash.substring(0, 6);
             LOGGER.info("GENERATED 6 CHARACTER MD5 HASH FROM URL '" + originalUrl + "'.");
+
+            // option2 - SHA1  (if hash collision)
+            if (getShortUrl(shortUrl) != HttpStatus.NOT_FOUND) {
+                // this is saying "if the shortUrl we just created already exists in the DB, and its not just a
+                // duplicate, then we have a hash collision", i.e. two originalUrl values hashed to the same value
+                String urlSha1Hash = MD5Encoder.encode(ConcurrentMessageDigest.digestSHA1(originalUrl.getBytes()));
+                shortUrl = urlSha1Hash.substring(0, 6);
+            }
+
             return shortUrl;
         }
         catch (Exception err) {
@@ -183,13 +220,13 @@ public class GenerateController {
 
     /**
      * Basic query method to fetch UrlItems from the database by index.
-     * e.g. Using a web browser: http://localhost:8080/af7335 --> returns {"originalUrl":"test0.com","shortUrl":"af7335-
+     * e.g. Using a web browser: http://localhost:8080/get/af7335 --> returns {"originalUrl":"test0.com","shortUrl":"af7335-
      *                                                                     ","numberOfClicks":1,"clicks":[null]}
      * @param shortUrl This is a wildcard path variable that should correlate to the shortUrl the user is trying to fet-
      *                 ch information on.
      * @return Returns the UrlItem wrapped in JSON if it exists. Otherwise returns an HTTP error code.
      */
-    @RequestMapping(value = "/{shortUrl}", method = RequestMethod.GET)
+    @RequestMapping(value = "/get/{shortUrl}", method = RequestMethod.GET)
     public @ResponseBody Object getShortUrl(@PathVariable("shortUrl") String shortUrl) {
         LOGGER.info("Received request: /{shortUrl}");
         LOGGER.info("getShortUrl > PathVariable 'shortUrl' = " + shortUrl);
