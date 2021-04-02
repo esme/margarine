@@ -41,6 +41,9 @@ public class GenerateController {
         @JsonProperty(value = "company", required = false)
         private String company;
 
+        @JsonProperty(value = "shortUrl", required = false)
+        private String shortUrl;
+
 
         public String getOriginalUrl() {
             return originalUrl;
@@ -60,6 +63,10 @@ public class GenerateController {
 
         public String getCompany() {
             return company;
+        }
+
+        public String getShortUrl() {
+            return shortUrl;
         }
     }
 
@@ -83,21 +90,28 @@ public class GenerateController {
          * 3. Store the UrlItem in the database
          */
 
-        String shortUrl = generateShortUrl(request.getOriginalUrl());  // Try to generate a short URL
-        LOGGER.info("GENERATED SHORT_URL: " + shortUrl);
+        String shortUrl = request.getShortUrl();
 
-        // STOP and return HTTP error if shortUrl has already been generated
+        // only try to generate a shortUrl if not specified in the DTO/request
+        if (request.getShortUrl() == null) {
+            shortUrl = generateShortUrl(request.getOriginalUrl());  // Try to generate a short URL
+            LOGGER.info("GENERATED SHORT_URL: " + shortUrl);
+        }
+
+        // *STOP* if shortUrl already stored in DB
         if (getShortUrl(shortUrl) != HttpStatus.NOT_FOUND) {
             LOGGER.error("KEY ALREADY EXISTS: PLEASE TRY A DIFFERENT URL.");
             return HttpStatus.ALREADY_REPORTED;
         }
 
-        ClickItem clickItem = new ClickItem(request.getLongitude(), request.getLatitude(), request.getTimeClicked()); // Capture the click
+        // record the first click item as the person who generated the click item
+        ClickItem clickItem = new ClickItem(request.getLongitude(), request.getLatitude(), request.getTimeClicked());
         LOGGER.info("LATITUDE: " + clickItem.getLatitude()
                 + ", LONGITUDE: " + clickItem.getLongitude()
                 + ", CLICK_TIME: " + clickItem.getTimeClicked());
 
-        UrlItem urlItem = new UrlItem(request.getOriginalUrl(), shortUrl); // Create the UrlItem to store in DB
+        // create the UrlItem to store in DB
+        UrlItem urlItem = new UrlItem(request.getOriginalUrl(), shortUrl);
         LOGGER.info("CREATED NEW URL_ITEM { " + urlItem.toString() + " }.");
 
         // set the company if the parameter was included in the DTO
@@ -106,10 +120,11 @@ public class GenerateController {
             LOGGER.info("SET COMPANY NAME { " + urlItem.toString() + " }.");
         }
 
-        urlItem.add(clickItem); // Save the click that created the UrlItem
+        // record the click
+        urlItem.add(clickItem);
 
         try{
-            // record the new shortUrl document in the database
+            // store the new shortUrl document in the database
             urlRepository.save(urlItem);
             LOGGER.info("URL_ITEM { " + urlItem.toString() + " } WAS SAVED TO THE DATABASE.");
 
