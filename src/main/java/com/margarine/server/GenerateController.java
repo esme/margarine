@@ -110,9 +110,9 @@ public class GenerateController {
 
 
     /**
-     *
-     * @param originalUrl
-     * @return
+     * Generates short URLs
+     * @param originalUrl This is the original URL to which the short URL will be related
+     * @return A JSON payload containing the original URL and short URL
      */
     private String generateShortUrl (String originalUrl) {
         try{
@@ -189,7 +189,7 @@ public class GenerateController {
      *                 ch information on.
      * @return Returns the UrlItem wrapped in JSON if it exists. Otherwise returns an HTTP error code.
      */
-    @RequestMapping(value = "/{shortUrl}", method = RequestMethod.GET)
+    @RequestMapping(value = "/get/{shortUrl}", method = RequestMethod.GET)
     public @ResponseBody Object getShortUrl(@PathVariable("shortUrl") String shortUrl) {
         LOGGER.info("Received request: /{shortUrl}");
         LOGGER.info("getShortUrl > PathVariable 'shortUrl' = " + shortUrl);
