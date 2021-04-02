@@ -38,7 +38,7 @@ public class GenerateController {
         private Date timeClicked; // dd-MM-YYYY
 
         @JsonProperty(value = "company", required = false)
-        private long company;
+        private String company;
 
 
         public String getOriginalUrl() {
@@ -55,6 +55,10 @@ public class GenerateController {
 
         public Date getTimeClicked() {
             return timeClicked;
+        }
+
+        public String getCompany() {
+            return company;
         }
     }
 
@@ -81,6 +85,12 @@ public class GenerateController {
         String shortUrl = generateShortUrl(request.getOriginalUrl());  // Try to generate a short URL
         LOGGER.info("GENERATED SHORT_URL: " + shortUrl);
 
+        // STOP and return HTTP error if shortUrl has already been generated
+        if (getShortUrl(shortUrl) == HttpStatus.NOT_FOUND) {
+            LOGGER.error("KEY ALREADY EXISTS: PLEASE TRY A DIFFERENT URL.");
+            return HttpStatus.ALREADY_REPORTED;
+        }
+
         ClickItem clickItem = new ClickItem(request.getLongitude(), request.getLatitude(), request.getTimeClicked()); // Capture the click
         LOGGER.info("LATITUDE: " + clickItem.getLatitude()
                 + ", LONGITUDE: " + clickItem.getLongitude()
@@ -88,6 +98,12 @@ public class GenerateController {
 
         UrlItem urlItem = new UrlItem(request.getOriginalUrl(), shortUrl); // Create the UrlItem to store in DB
         LOGGER.info("CREATED NEW URL_ITEM { " + urlItem.toString() + " }.");
+
+        // set the company if the parameter was included in the DTO
+        if (request.getCompany() != null) {
+            urlItem.setCompany(request.getCompany());
+            LOGGER.info("SET COMPANY NAME { " + urlItem.toString() + " }.");
+        }
 
         urlItem.add(clickItem); // Save the click that created the UrlItem
 
