@@ -15,18 +15,14 @@ import java.util.ArrayList;
 @NoArgsConstructor  // Lombok helper ^
 public class UrlItem {
 
-    @Indexed(name = "original_url_index", unique=true)
-    private String originalUrl;       // e.g. google.com
-
-    @Id @Indexed(name = "short_url_index")
-    private String shortUrl;          // e.g. margarine.com/goo123
-
-    private int numberOfClicks;       // shortUrl total click counter
-
+    @Indexed(name = "original_url_index", unique=true)  private String originalUrl;  // e.g. google.com
+    @Id @Indexed(name = "short_url_index") private String shortUrl;  // e.g. margarine.com/goo123
+    private int numberOfClicks;  // shortUrl total click counter
     private ArrayList<ClickItem> clicks;  // array of all clicks that match to shortUrl
+    private String company;  // optional company name
 
-    private String company; // optional company name
 
+    /** default constructor */
     public UrlItem(String originalUrl, String shortUrl){
         this.originalUrl = originalUrl;
         this.shortUrl = shortUrl;
@@ -34,6 +30,7 @@ public class UrlItem {
         clicks = new ArrayList<>();
     }
 
+    /** overloaded constructor that allows optional company param */
     public UrlItem(String originalUrl, String shortUrl, String company){
         this.originalUrl = originalUrl;
         this.shortUrl = shortUrl;
@@ -42,11 +39,17 @@ public class UrlItem {
         clicks = new ArrayList<>();
     }
 
+    public void setCompany (String company) {
+        this.company = company;
+    }
+
+    /** appends a new click item to the click array */
     public void add(ClickItem clickItem) {
         clicks.add(clickItem);
         numberOfClicks++;
     }
 
+    /** pretty prints the UrlItem */
     @Override
     public String toString() {
         if (this.company != null) {
