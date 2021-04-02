@@ -25,10 +25,19 @@ public class UrlItem {
 
     private ArrayList<ClickItem> clicks;  // array of all clicks that match to shortUrl
 
+    private String company; // optional company name
 
     public UrlItem(String originalUrl, String shortUrl){
         this.originalUrl = originalUrl;
         this.shortUrl = shortUrl;
+        numberOfClicks = 0;
+        clicks = new ArrayList<>();
+    }
+
+    public UrlItem(String originalUrl, String shortUrl, String company){
+        this.originalUrl = originalUrl;
+        this.shortUrl = shortUrl;
+        this.company = company;
         numberOfClicks = 0;
         clicks = new ArrayList<>();
     }
@@ -40,6 +49,17 @@ public class UrlItem {
 
     @Override
     public String toString() {
+        if (this.company != null) {
+            return String.format(
+                    "UrlItem[originalUrl='%s', " +
+                            "shortUrl='%s, " +
+                            "company='%s', " +
+                            "numberOfClicks=%s, " +
+                            "clicks=%s" +
+                            "']",
+                    originalUrl, shortUrl, company, numberOfClicks, clicks.toString());
+
+        }
         return String.format(
                 "UrlItem[originalUrl='%s', " +
                         "shortUrl='%s, " +
