@@ -2,28 +2,25 @@ package com.margarine.server;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margarine.db.ClickItem;
-import com.margarine.db.LocationItem;
 import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
-import net.minidev.json.JSONObject;
 import org.apache.tomcat.util.security.ConcurrentMessageDigest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
-
 import org.apache.tomcat.util.security.MD5Encoder;
 
 
 @RestController
 public class GenerateController {
 
+    // specifies http request body that user most provide to invoke generate function
     private static class UrlDTO {
 
         @JsonProperty(value = "originalUrl", required = true)
@@ -70,10 +67,10 @@ public class GenerateController {
         }
     }
 
+    // log to spring boot console using this object
     private static final Logger LOGGER=LoggerFactory.getLogger(GenerateController.class);
 
-    private static final String DOMAIN_NAME = "margarine.com";
-
+    // read or write from database using this object
     @Autowired private UrlRepository urlRepository;
 
 
@@ -154,10 +151,8 @@ public class GenerateController {
         }
 
         try{
-
             //option 1 - MD5
             String urlMd5Hash = MD5Encoder.encode(ConcurrentMessageDigest.digestMD5(originalUrl.getBytes()));
-            //String shortUrl = DOMAIN_NAME + "/" + urlMd5Hash.substring(0, 6);
             String shortUrl = urlMd5Hash.substring(0, 6);
             LOGGER.info("GENERATED 6 CHARACTER MD5 HASH FROM URL '" + originalUrl + "'.");
 
@@ -225,7 +220,7 @@ public class GenerateController {
 
     /**
      * Basic query method to fetch UrlItems from the database by index.
-     * e.g. Using a web browser: http://localhost:8080/af7335 --> returns {"originalUrl":"test0.com","shortUrl":"af7335-
+     * e.g. Using a web browser: http://localhost:8080/get/af7335 --> returns {"originalUrl":"test0.com","shortUrl":"af7335-
      *                                                                     ","numberOfClicks":1,"clicks":[null]}
      * @param shortUrl This is a wildcard path variable that should correlate to the shortUrl the user is trying to fet-
      *                 ch information on.
