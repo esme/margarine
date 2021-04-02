@@ -25,17 +25,20 @@ public class GenerateController {
 
     private static class UrlDTO {
 
-        @JsonProperty("originalUrl")
+        @JsonProperty(value = "originalUrl", required = true)
         private String originalUrl; // google.com
 
-        @JsonProperty("longitude")
+        @JsonProperty(value = "longitude", required = true)
         private long longitude;
 
-        @JsonProperty("latitude")
+        @JsonProperty(value = "latitude", required = true)
         private long latitude;
 
-        @JsonProperty("timeClicked")
+        @JsonProperty(value = "timeClicked", required = true)
         private Date timeClicked; // dd-MM-YYYY
+
+        @JsonProperty(value = "company", required = false)
+        private long company;
 
 
         public String getOriginalUrl() {
@@ -56,8 +59,6 @@ public class GenerateController {
     }
 
     private static final Logger LOGGER=LoggerFactory.getLogger(GenerateController.class);
-
-    private static long id = 0;
 
     private static final String DOMAIN_NAME = "margarine.com";
 
