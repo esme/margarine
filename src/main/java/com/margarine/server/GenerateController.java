@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.HashMap;
@@ -86,7 +87,7 @@ public class GenerateController {
         LOGGER.info("GENERATED SHORT_URL: " + shortUrl);
 
         // STOP and return HTTP error if shortUrl has already been generated
-        if (getShortUrl(shortUrl) == HttpStatus.NOT_FOUND) {
+        if (getShortUrl(shortUrl) != HttpStatus.NOT_FOUND) {
             LOGGER.error("KEY ALREADY EXISTS: PLEASE TRY A DIFFERENT URL.");
             return HttpStatus.ALREADY_REPORTED;
         }
@@ -133,17 +134,19 @@ public class GenerateController {
      */
     private String generateShortUrl (String originalUrl) {
         try{
-            // TODO Check DB for originalUrl
-            // TODO Generate and return short URL
 
-            //option1
-            //String shortUrl = DigestUtils.md5DigestAsHex(originalUrl.getBytes());
-
-            //option 2
+            //option 1 - MD5
             String urlMd5Hash = MD5Encoder.encode(ConcurrentMessageDigest.digestMD5(originalUrl.getBytes()));
             //String shortUrl = DOMAIN_NAME + "/" + urlMd5Hash.substring(0, 6);
             String shortUrl = urlMd5Hash.substring(0, 6);
             LOGGER.info("GENERATED 6 CHARACTER MD5 HASH FROM URL '" + originalUrl + "'.");
+
+            // option2 - SHA1  (if hash collision)
+            if (getShortUrl(shortUrl) != HttpStatus.NOT_FOUND) {
+                String urlSha1Hash = MD5Encoder.encode(ConcurrentMessageDigest.digestSHA1(originalUrl.getBytes()));
+                shortUrl = urlSha1Hash.substring(0, 6);
+            }
+
             return shortUrl;
         }
         catch (Exception err) {
