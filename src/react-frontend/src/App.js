@@ -4,6 +4,20 @@ import Dashboard from './Dashboard';
 import Shortener from './Shortener';
 import Background from './images/margarinebg.jpg'
 import Logo from './images/margarinelogo.png'
+import Graph from './Graph';
+
+function Header(props) {
+  return (
+    <div className="header">
+      <div></div>
+      <img alt="logo" src={Logo}>
+      </img>
+      <div>
+        {props.children}
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
@@ -16,25 +30,25 @@ function App() {
         <BrowserRouter>
           <Switch>
             <Route path="/dashboard">
-              <div className="header">
-                <img alt="logo" src={Logo}>
-                </img>
-              </div>
+              <Header>
+                <input
+                  className="inputRounded inputButton inputDashboard"
+                  value="Homepage"
+                  type="button"
+                  onClick={() => window.location.href="/"}
+                />
+              </Header>
               <Dashboard />
             </Route>
             <Route path="/">
-              <div className="header">
-                <div></div>
-                <img alt="logo" src={Logo}>
-                </img>
-                <div>
-                  <input
-                    className="inputRounded inputButton inputDashboard"
-                    value="Dashboard"
-                    type="button"
-                  />
-                </div>
-              </div>
+              <Header>
+                <input
+                  className="inputRounded inputButton inputDashboard"
+                  value="Dashboard"
+                  type="button"
+                  onClick={() => window.location.href="/dashboard"}
+                />
+              </Header>
               <Shortener />
             </Route>
           </Switch>
