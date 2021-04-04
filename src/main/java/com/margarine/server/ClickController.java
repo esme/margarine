@@ -6,6 +6,7 @@ import com.margarine.db.LocationItem;
 import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
 import java.util.Date;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,78 +26,71 @@ public class ClickController {
 
     private class ClickDTO {
         // TODO DEFINE A DATA TRANSFER OBJECT THAT SPECIFIES THE REQUIRED API BODY/PAYLOAD THAT THE CLIENT MUST SUPPLY
-        @JsonProperty("shortUrl")
-         private String shortUrl;
         
-        @JsonProperty("latitude")
+        @JsonProperty(value = "shortUrl", required = true)
+         private String shortUrl;
+
+        
+        @JsonProperty(value = "longitude", required = true)
+        private long longitude;
+
+        
+        @JsonProperty(value = "latitude", required = true)
         private long latitude;
         
-        @JsonProperty("longitude")
-        private long longitude;
-        
-        @JsonProperty("ipAddress")
-        private String ipAddress;
-        
-        @JsonProperty("timeClicked") //Payload parameter was added
+        @JsonProperty(value = "timeClicked", required = true)
         private Date timeClicked;
 
-        public String getShortUrl() {
-            return shortUrl;
+        public long getLongitude() {
+            return longitude;
         }
 
         public long getLatitude() {
             return latitude;
         }
 
-        public long getLongitude() {
-            return longitude;
-        }
-
-        public String getIpAddress() {
-            return ipAddress;
-        }
-
         public Date getTimeClicked() {
             return timeClicked;
         }
-        
+
+        public String getShortUrl() {
+            return shortUrl;
+        }
+
     }
     
-    private static final Logger LOGGER=LoggerFactory.getLogger(ClickController.class);
     
-    private static long id = 0;
-
     @Autowired
     private UrlRepository urlRepository;
 
 
     @RequestMapping(
-            value = "/click", method = RequestMethod.POST,
+            value = "/**", method = RequestMethod.GET/*,
             produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE
+            consumes = MediaType.APPLICATION_JSON_VALUE*/
     )
     public @ResponseBody HttpStatus clickShortUrl(@RequestBody ClickDTO request) {
         
-        String uniqueId = String.valueOf(id++);
-        LOGGER.info("SET UNIQUE_ID: " + uniqueId);
+        //Finds a document in the database that matches the short url passed to the function. 
+        Optional<UrlItem> match = urlRepository.findById(request.getShortUrl());
         
-        LocationItem locationItem = new LocationItem(uniqueId, request.getLongitude(), request.getLatitude());
-        LOGGER.info("SET LATITUDE: " + locationItem.getLatitude() + ", LONGITUDE: " + locationItem.getLongitude());
+        //The document was not found in the database
+        if(!match.isPresent()){
+            return HttpStatus.NOT_FOUND;
+        }
+        else{
+            //Click Item is generated with the necessary information(location, time clicked)
+            ClickItem clickItem = new ClickItem(request.getLongitude(), request.getLatitude(), request.getTimeClicked());
+            //Url item fetched from the database for update purposes
+            UrlItem urlItem = match.get();
+            //Url item gets updated (click item is added to clicks array)
+            urlItem.add(clickItem);
+            //Database is saved after making the necessary update.
+            urlRepository.save(urlItem);
+            
+            return HttpStatus.FOUND;
+        }
         
-        ClickItem clickItem = new ClickItem(uniqueId, locationItem, request.getTimeClicked());
-        LOGGER.info("SET CLICK_TIME: " + clickItem.getTimeClicked());
-        
-        UrlItem urlItem = urlRepository.findUrlItemByShortUrl(request.getShortUrl());
-        LOGGER.info("FOUND URL_ITEM { " + urlItem.toString() + " }.");
-        
-        updateClickList(urlItem, clickItem);
-
-        return HttpStatus.ACCEPTED;
-    }
-    
-    public void updateClickList(UrlItem urlItem, ClickItem clickItem){
-        urlItem.add(clickItem);
-        urlRepository.save(urlItem);
     }
 
 }
