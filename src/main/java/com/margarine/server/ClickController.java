@@ -24,10 +24,9 @@ public class ClickController {
      */
 
 
-    private class ClickDTO {
-        // TODO DEFINE A DATA TRANSFER OBJECT THAT SPECIFIES THE REQUIRED API BODY/PAYLOAD THAT THE CLIENT MUST SUPPLY
-        
-        @JsonProperty(value = "shortUrl", required = true)
+    private static class ClickDTO {
+
+        @JsonProperty(value = "shortUrl", required = false)
          private String shortUrl;
 
         
@@ -65,14 +64,14 @@ public class ClickController {
 
 
     @RequestMapping(
-            value = "/**", method = RequestMethod.GET/*,
+            value = "/{shortUrl}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE*/
+            consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public @ResponseBody HttpStatus clickShortUrl(@RequestBody ClickDTO request) {
+    public @ResponseBody HttpStatus clickShortUrl(@PathVariable("shortUrl") String shortUrl, @RequestBody ClickDTO request) {
         
         //Finds a document in the database that matches the short url passed to the function. 
-        Optional<UrlItem> match = urlRepository.findById(request.getShortUrl());
+        Optional<UrlItem> match = urlRepository.findById(shortUrl);
         
         //The document was not found in the database
         if(!match.isPresent()){
