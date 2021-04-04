@@ -237,5 +237,4 @@ public class GenerateController {
         else return HttpStatus.NOT_FOUND; // otherwise returns NOT_FOUND
     }
 
-
 }
