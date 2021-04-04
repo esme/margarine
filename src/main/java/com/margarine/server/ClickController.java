@@ -12,9 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-
+@Controller
 @RestController
 public class ClickController {
 
@@ -68,7 +69,7 @@ public class ClickController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public @ResponseBody HttpStatus clickShortUrl(@PathVariable("shortUrl") String shortUrl, @RequestBody ClickDTO request) {
+    public Object clickShortUrl(@PathVariable("shortUrl") String shortUrl, @RequestBody ClickDTO request) {
         
         //Finds a document in the database that matches the short url passed to the function. 
         Optional<UrlItem> match = urlRepository.findById(shortUrl);
@@ -82,12 +83,15 @@ public class ClickController {
             ClickItem clickItem = new ClickItem(request.getLongitude(), request.getLatitude(), request.getTimeClicked());
             //Url item fetched from the database for update purposes
             UrlItem urlItem = match.get();
+            // Extract the original Url to redirect the user
+            String originalUrl = urlItem.getOriginalUrl();
+            System.out.println("originalUrl = " + originalUrl);
             //Url item gets updated (click item is added to clicks array)
             urlItem.add(clickItem);
             //Database is saved after making the necessary update.
             urlRepository.save(urlItem);
             
-            return HttpStatus.FOUND;
+            return "redirect:/" + originalUrl;
         }
         
     }
