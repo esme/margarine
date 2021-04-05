@@ -181,3 +181,12 @@ input:focus {
   font-weight: 600;
   text-align: left;
 }
+
+textarea:focus, input:focus{
+  outline: 0;
+}
+
+textarea {
+  line-height: 95%;
+  font-family: Ebrima;
+}

@@ -5,18 +5,24 @@ import { useState, useRef } from 'react';
 const Shortener = () => {
   const REST_API_URL = 'http://localhost:8080';
 
-  const [longUrl, setLongUrl] = useState("");
+  const [originalUrl, setOriginalUrl] = useState("");
   const [company, setCompany] = useState("");
   const [customUrl, setCustomUrl] = useState("");
+  const [shortenedUrl, setShortenedUrl] = useState("");
   const inputRef = useRef(null);
   
-  const sendData = async () => {
-    const res = await axios.get(REST_API_URL);
-    console.log(res.data.content);
+  const generateLink = async () => {
+    const res = await axios.post(`${REST_API_URL}/generate`, {
+      "original_url": originalUrl,
+      company,
+      "shortUrl": customUrl
+    });
+    console.log(res.data);
+    setShortenedUrl('123');
   }
 
   const resetFields = () => {
-    setLongUrl("");
+    setOriginalUrl("");
     setCompany("");
     setCustomUrl("");
   }
@@ -38,9 +44,9 @@ const Shortener = () => {
           className="inputRounded inputText"
           style={{width: '60%'}}
           placeholder="Enter your URL"
-          value={longUrl}
+          value={originalUrl}
           type="text"
-          onChange={e => setLongUrl(e.target.value)}
+          onChange={e => setOriginalUrl(e.target.value)}
         />
         <br />
         <input
@@ -76,7 +82,7 @@ const Shortener = () => {
           style={{width: '120px'}}
           value="Shorten"
           type="button"
-          onClick={sendData}
+          onClick={generateLink}
         />
         <br />
         <div className="formText">Get your shortened URL:</div>
@@ -84,28 +90,25 @@ const Shortener = () => {
           ref={inputRef}
           className="inputRounded inputText"
           style={{width: '50%'}}
-          value="margarine.com/123"
+          placeholder={`margarine.com/${shortenedUrl}`}
           type="text"
-          readonly="readonly"
         />
-        <span>
-          <input
-            className="inputRounded inputButton"
-            style={{
-              fontFamily: 'fontAwesome',
-              fontSize: 15,
-              color: '#fff'
-            }}
-            value="&#xf0c5;"
-            type="button"
-            onClick={copyToClipboard}
-          />
-        </span>
+        <input
+          className="inputRounded inputButton"
+          style={{
+            fontFamily: 'fontAwesome',
+            fontSize: 15,
+            color: '#fff'
+          }}
+          value="&#xf0c5;"
+          type="button"
+          onClick={copyToClipboard}
+        />
         <br/>
         <br/>
         <input
           style={{
-            backgroundColor: longUrl.length ? '#ebbb10' : '#FFE48A',
+            backgroundColor: originalUrl.length ? '#ebbb10' : '#FFE48A',
             width: '120px'
           }}
           className="inputRounded inputButton"
