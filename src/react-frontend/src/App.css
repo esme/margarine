@@ -38,23 +38,31 @@
   }
 }
 
+.form-container {
+  display: flex;
+}
+
 .form {
   margin: 20px auto 0 auto;
-  width: 25%;
+  width: 40%;
+}
+
+.dashboard {
+  width: 75%;
 }
 
 .inputRounded {
   border-radius: 50px;
   background-color: #FFFFFF;
-  border: 1px solid #DDDDDD;
+  border: none;
+  /* border: 1px solid #DDDDDD; */
   padding: 10px 14px;
   cursor:text;
 }
 
 .inputText {
-  width: 100%;
   box-sizing: border-box;
-  margin-top: 15px;
+  margin: 15px 10px 0 0;
 }
 
 .inputDashboard {
@@ -96,6 +104,7 @@ input:focus {
   font-size: 30px;
   display: flex;
   justify-content: space-between;
+  border-bottom: 2px solid #f3ca3f;
 }
 
 .header img {
@@ -116,7 +125,8 @@ input:focus {
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: 0.3s;
   width: 22%;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: #fff;
+  border: 3px solid #ebbb10;
 }
 
 .card:hover {
@@ -136,4 +146,38 @@ input:focus {
 
 .map {
   padding: 20px 0 30px 0;
+}
+
+#links-table {
+  border-collapse: collapse;
+  width: 80%;
+  margin: 25px auto 25px auto;
+  border-style: hidden;
+  background-color: #fff;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+}
+
+#links-table th {
+  background-color: #EEBB10;
+  color: #fff;
+  font-weight: 800;
+
+}
+
+#links-table td, #links-table th {
+  border: 3px solid #ebbb10;
+  padding: 8px;
+}
+
+.border {
+  width: 2px;
+  margin: 20px auto;
+  background-color: #ebbb10;
+}
+
+.form-text {
+  margin: 5px;
+  font-weight: 600;
+  text-align: left;
 }

@@ -9,10 +9,14 @@ import Graph from './Graph';
 function Header(props) {
   return (
     <div className="header">
-      <div></div>
+      <div
+        style={{"width": "100px"}}
+      ></div>
       <img alt="logo" src={Logo}>
       </img>
-      <div>
+      <div
+        style={{"width": "100px"}}
+      >
         {props.children}
       </div>
     </div>
