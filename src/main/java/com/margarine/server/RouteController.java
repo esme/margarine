@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class RouteController {
 
     /** Redirect all '/' and '/dashboard/ requests to index.html. */
-    @GetMapping(value = {"path:/", "path:/dashboard"})
+    @GetMapping(value = {"/", "/dashboard"})
     public String redirect() {
         return "forward:/index.html";
     }
