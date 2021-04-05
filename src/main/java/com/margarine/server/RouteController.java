@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class RouteController {
 
     /** SPA route that redirects all root directory GET requests to index.html. */
-    @RequestMapping(value = {"/", "/home", "index", "index.html", "dashboard", "dashboard.html"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/", "/home", "dashboard", "dashboard.html"}, method = RequestMethod.GET)
     public String redirectHome() {
         return "forward:/index.html";
     }
