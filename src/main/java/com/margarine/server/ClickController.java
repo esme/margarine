@@ -2,7 +2,6 @@ package com.margarine.server;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margarine.db.ClickItem;
-import com.margarine.db.LocationItem;
 import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
 import java.util.Date;
@@ -14,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
 
 @Controller
 @RestController
@@ -64,12 +64,13 @@ public class ClickController {
     private UrlRepository urlRepository;
 
 
-    @RequestMapping(
-            value = "/{shortUrl}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE
-    )
+    /**
+     * Treat all routes as /{shortUrl} clicks except: '/', '/index.html'
+     */
+    @RequestMapping(value = "{_:^(?!index\\.html|dashboard).*$}")
     public Object clickShortUrl(@PathVariable("shortUrl") String shortUrl, @RequestBody ClickDTO request) {
+
+        System.out.println("TEST2");
         
         //Finds a document in the database that matches the short url passed to the function. 
         Optional<UrlItem> match = urlRepository.findById(shortUrl);
