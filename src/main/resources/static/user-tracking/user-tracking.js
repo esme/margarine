@@ -1,5 +1,5 @@
 window.addEventListener('load', (event) => {
-  geoFindMe();
+  userTracking();
 });
 
 async function getIP(){
@@ -28,7 +28,7 @@ async function sendData(latitude, longitude, timestamp) {
   // });
 }
 
-function geoFindMe() {
+function userTracking() {
   const status = document.querySelector('#status');
 
   function success(position) {

@@ -35,7 +35,7 @@ function Dashboard () {
             />
           </div>
           <div className="form-text"
-            style={{margin: '20px 10px'}}
+            style={{margin: '20px 25px'}}
           >
             OR
           </div>
