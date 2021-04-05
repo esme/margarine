@@ -16,14 +16,32 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'           // adds web application functionality
-	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'  // adds mongodb functionality
-    implementation 'org.springframework.boot:spring-boot-starter-data-rest'     // adds rest api functionality
-    //implementation 'com.okta.spring:okta-spring-boot-starter:2.0.1'             // adds simple oauth/oidc authentication functionality
+    // adds web application functionality
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// adds mongodb functionality
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    // adds rest api functionality
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+
+    // adds simple oauth/oidc authentication functionality
+    //implementation 'com.okta.spring:okta-spring-boot-starter:2.0.1'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    //implementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'          // adds an embedded in-memory mongodb for testing
+
+    // adds an embedded in-memory mongodb for testing
+    //implementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+
+    // Lombok is a Spring Boot helper class
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // dependency for Google Maps API reverse geo-coding
+    implementation 'com.squareup.okhttp3:okhttp:4.4.0'
+
+    // dependency for Google Maps API reverse geo-coding
+    compileOnly 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
 
 }
 

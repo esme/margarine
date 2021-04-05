@@ -23,4 +23,16 @@ public class ClickItem {
         this.latitude = latitude;
         this.timeClicked = timeClicked;
     }
+
+    public long getLongitude () {
+        return longitude;
+    }
+
+    public long getLatitude () {
+        return latitude;
+    }
+
+    public String getTimeClicked () {
+        return timeClicked.toString();
+    }
 }
