@@ -1,117 +1,112 @@
+import axios from 'axios';
 import { useState } from 'react';
-import { DataGrid } from '@material-ui/data-grid';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Graph from './Graph';
 
-const useStyles = makeStyles({
-  root: {
-    '& .grid-theme': {
-      fontFamily: 'Ebrima',
-    },
-    '& .header-theme': {
-      backgroundColor: 'black',
-      color: 'white'
-    },
-    '& .cell-theme': {
-      backgroundColor: 'rgba(255, 255, 255, 0.3)'
-    },
-  },
-});
-
 function Dashboard () {
-  const classes = useStyles();
+  const REST_API_URL = 'http://localhost:8080';
 
   const [shortUrl, setShortUrl] = useState("");
   const [company, setCompany] = useState("");
-
-  const columns = [
-    { 
-      field: 'shortUrl',
-      headerClassName: 'grid-theme header-theme',
-      cellClassName: 'grid-theme cell-theme',
-      headerName: 'Short link',
-      width: 420
-    },
-    { 
-      field: 'originalUrl',
-      headerClassName: 'grid-theme header-theme',
-      cellClassName: 'grid-theme cell-theme',
-      headerName: 'Original Link',
-      width: 420
-    },
-    {
-      field: 'dateCreated',
-      headerClassName: 'grid-theme header-theme',
-      cellClassName: 'grid-theme cell-theme',
-      headerName: 'Date Created',
-      type: 'date',
-      width: '100%',
-    }
-  ];
-
-  const rows = [
-    { id: 1, shortUrl: 'https://en.wikipedia.org/wiki/Snow', originalUrl: 'https://en.wikipedia.org/wiki/Jon', dateCreated: Date.now() },
-    { id: 2, shortUrl: 'https://en.wikipedia.org/wiki/Lannister', originalUrl: 'https://en.wikipedia.org/wiki/Cersei', dateCreated: Date.now() },
-    { id: 3, shortUrl: 'https://en.wikipedia.org/wiki/Lannister', originalUrl: 'https://en.wikipedia.org/wiki/Jaime', dateCreated: Date.now() },
-    { id: 4, shortUrl: 'https://en.wikipedia.org/wiki/Stark', originalUrl: 'https://en.wikipedia.org/wiki/Arya', dateCreated: Date.now() },
-    { id: 5, shortUrl: 'https://en.wikipedia.org/wiki/Targaryen', originalUrl: 'https://en.wikipedia.org/wiki/Daenerys', dateCreated: Date.now() },
-    { id: 6, shortUrl: 'https://en.wikipedia.org/wiki/Melisandre', originalUrl: null, dateCreated: Date.now() },
-    { id: 7, shortUrl: 'https://en.wikipedia.org/wiki/Clifford', originalUrl: 'https://en.wikipedia.org/wiki/Ferrara', dateCreated: Date.now() },
-    { id: 8, shortUrl: 'https://en.wikipedia.org/wiki/Frances', originalUrl: 'https://en.wikipedia.org/wiki/Rossini', dateCreated: Date.now() },
-    { id: 9, shortUrl: 'https://en.wikipedia.org/wiki/Roxie', originalUrl: 'https://en.wikipedia.org/wiki/Harvey', dateCreated: Date.now() },
-  ];
+  const sendShortUrl = async () => {
+    const res = await axios.get(REST_API_URL);
+    console.log(res.data.content);
+  }
 
   return (
     <>
-      <h1>Dashboard</h1>
-      <div className="form">
-        <div>Track your URL:</div>
-        <input
-          className="inputRounded inputText"
-          value={shortUrl}
-          type="text"
-          onChange={e => setShortUrl(e.target.value)}
-        />
-        <br/>
-        <div>Search by Company Name:</div>
-        <input
-          className="inputRounded inputText"
-          value={company}
-          type="text"
-          onChange={e => setCompany(e.target.value)}
-        />
+      <div className="form-container">
+        <div className="form">
+          <div style={{height: '44px'}}></div>
+          <div className="form-text">Track your URL:</div>
+          <div>
+            <input
+              className="inputRounded inputText"
+              style={{width: '65%'}}
+              value={shortUrl}
+              type="text"
+              onChange={e => setShortUrl(e.target.value)}
+            />
+            <input
+              className="inputRounded inputButton"
+              style={{width: '25%'}}
+              value="Add"
+              type="button"
+              onClick={sendShortUrl}
+            />
+          </div>
+          <div className="form-text"
+            style={{margin: '20px 10px'}}
+          >
+            OR
+          </div>
+          <div className="form-text">Search by Company Name:</div>
+          <div>
+            <input
+              className="inputRounded inputText"
+              style={{width: '65%'}}
+              value={company}
+              type="text"
+              onChange={e => setCompany(e.target.value)}
+              placeholder="Coming soon..."
+              disabled
+            />
+            <input
+              className="inputRounded inputButton"
+              style={{width: '25%'}}
+              value="Search"
+              type="button"
+              disabled
+            />
+          </div>
+        </div>
+        <div className="border"></div>
+        <div className="dashboard">
+          <h1 style={{textAlign: 'left', marginLeft: '10%'}}>Dashboard</h1>
+          <table id="links-table">
+            <tr>
+              <th style={{borderTopLeftRadius: '10px'}}>Margarine Link</th>
+              <th>Original Link</th>
+              <th style={{borderTopRightRadius: '10px'}}>Date Created</th>
+            </tr>
+            <tr>
+              <td>https://en.wikipedia.org/wiki/Snow</td>
+              <td>https://en.wikipedia.org/wiki/Jon</td>
+              <td>11-11-2001</td>
+            </tr>
+          </table>
+          {/* <div style={{ height: 400, width: '80%', margin: '25px auto 0 auto' }} className={classes.root}>
+            <DataGrid rows={rows} columns={columns} pageSize={5} />
+          </div> */}
+          <div className="card-container">
+            <div className="card">
+              <div className="container">
+                <h4>Total Clicks</h4>
+                <h1>786</h1>
+              </div>
+            </div>
+            <div className="card">
+              <div className="container">
+                <h4>Date Last Accessed</h4>
+                <h1>2/24/21</h1>
+              </div>
+            </div>
+            <div className="card">
+              <div className="container">
+                <h4>Most Visitors From</h4>
+                <h1>MA</h1>
+                <p>USA</p>
+              </div>
+            </div>
+            <div className="card">
+              <div className="container">
+                <h4>Clicks Today</h4>
+                <h1>12</h1>
+              </div>
+            </div>
+          </div>
+          <Graph />
+        </div>
       </div>
-      <div style={{ height: 400, width: '80%', margin: '25px auto 0 auto' }} className={classes.root}>
-        <DataGrid rows={rows} columns={columns} pageSize={5} />
-      </div>
-      <div className="card-container">
-        <div className="card">
-          <div className="container">
-            <h4>Total Unique Visitors</h4>
-            <h1>786</h1>
-          </div>
-        </div>
-        <div className="card">
-          <div className="container">
-            <h4>Date Last Accessed</h4>
-            <h1>2/24/21</h1>
-          </div>
-        </div>
-        <div className="card">
-          <div className="container">
-            <h4>Most Visitors From</h4>
-            <h1>MA</h1>
-            <p>USA</p>
-          </div>
-        </div>
-        <div className="card">
-          <div className="container">
-            <h4>Visitors Today</h4>
-            <h1>12</h1>
-          </div>
-        </div>
-      </div>
-      <Graph />
     </>
   );
 }
