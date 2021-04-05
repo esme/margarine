@@ -65,7 +65,7 @@ public class ClickController {
 
 
     /**
-     * Treat all routes as /{shortUrl} clicks except: '/', '/index.html'
+     * Treat all routes as /{shortUrl} clicks except: '/', '/index.html, and '/dashboard'
      */
     @RequestMapping(value = "{_:^(?!index\\.html|dashboard).*$}")
     public Object clickShortUrl(@PathVariable("shortUrl") String shortUrl, @RequestBody ClickDTO request) {
