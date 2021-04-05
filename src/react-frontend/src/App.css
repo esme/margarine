@@ -177,7 +177,7 @@ input:focus {
 }
 
 .form-text {
-  margin: 5px;
+  margin: 5px 25px;
   font-weight: 600;
   text-align: left;
 }
