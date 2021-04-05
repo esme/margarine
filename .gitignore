@@ -35,3 +35,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### static assets ###
+src/main/resources/static/static/css/
+src/main/resources/static/static/js/
+src/main/resources/static/static/media/
