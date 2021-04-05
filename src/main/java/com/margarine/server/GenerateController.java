@@ -26,13 +26,13 @@ public class GenerateController {
         @JsonProperty(value = "originalUrl", required = true)
         private String originalUrl; // google.com
 
-        @JsonProperty(value = "longitude", required = true)
+        @JsonProperty(value = "longitude", required = false)
         private long longitude;
 
-        @JsonProperty(value = "latitude", required = true)
+        @JsonProperty(value = "latitude", required = false)
         private long latitude;
 
-        @JsonProperty(value = "timeClicked", required = true)
+        @JsonProperty(value = "timeClicked", required = false)
         private Date timeClicked; // dd-MM-YYYY
 
         @JsonProperty(value = "company", required = false)
@@ -87,10 +87,13 @@ public class GenerateController {
          * 3. Store the UrlItem in the database
          */
 
+        System.out.print("Request :");
+        System.out.print(request);
+
         String shortUrl = request.getShortUrl();
 
         // only try to generate a shortUrl if not specified in the DTO/request
-        if (request.getShortUrl() == null) {
+        if (request.getShortUrl() == null || request.getShortUrl().length() == 0) {
             shortUrl = generateShortUrl(request.getOriginalUrl());  // Try to generate a short URL
             LOGGER.info("GENERATED SHORT_URL: " + shortUrl);
         }
@@ -102,10 +105,10 @@ public class GenerateController {
         }
 
         // record the first click item as the person who generated the click item
-        ClickItem clickItem = new ClickItem(request.getLongitude(), request.getLatitude(), request.getTimeClicked());
-        LOGGER.info("LATITUDE: " + clickItem.getLatitude()
-                + ", LONGITUDE: " + clickItem.getLongitude()
-                + ", CLICK_TIME: " + clickItem.getTimeClicked());
+        // ClickItem clickItem = new ClickItem(request.getLongitude(), request.getLatitude(), request.getTimeClicked());
+        // LOGGER.info("LATITUDE: " + clickItem.getLatitude()
+        //         + ", LONGITUDE: " + clickItem.getLongitude()
+        //         + ", CLICK_TIME: " + clickItem.getTimeClicked());
 
         // create the UrlItem to store in DB
         UrlItem urlItem = new UrlItem(request.getOriginalUrl(), shortUrl);
@@ -118,7 +121,7 @@ public class GenerateController {
         }
 
         // record the click
-        urlItem.add(clickItem);
+        // urlItem.add(clickItem);
 
         try{
             // store the new shortUrl document in the database

@@ -9,16 +9,24 @@ const Shortener = () => {
   const [company, setCompany] = useState("");
   const [customUrl, setCustomUrl] = useState("");
   const [shortenedUrl, setShortenedUrl] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const inputRef = useRef(null);
   
   const generateLink = async () => {
-    const res = await axios.post(`${REST_API_URL}/generate`, {
-      "original_url": originalUrl,
-      company,
-      "shortUrl": customUrl
-    });
-    console.log(res.data);
-    setShortenedUrl('123');
+    if (originalUrl.length) {
+      const res = await axios.post(`${REST_API_URL}/generate`, {
+        originalUrl,
+        company,
+        shortUrl: customUrl
+      });
+      console.log(res);
+      if (res.data === 'CONFLICT') {
+        setSuccessMessage("Error! URL already exists in database.");
+      } else {
+        setSuccessMessage("Success!");
+        setShortenedUrl(res.data.short_url);
+      }
+    }
   }
 
   const resetFields = () => {
@@ -58,7 +66,12 @@ const Shortener = () => {
           onChange={e => setCompany(e.target.value)}
         />
         <br />
-        <div className="formText">Customize your link:</div>
+        <div
+          className="formText"
+          style={{marginTop: '30px'}}
+        >
+          Customize your link:
+        </div>
         <div>
           <input
             style={{width: '30%'}}
@@ -79,12 +92,14 @@ const Shortener = () => {
         <br />
         <input
           className="inputRounded inputButton"
-          style={{width: '120px'}}
+          style={{width: '120px', marginBottom: '30px'}}
           value="Shorten"
           type="button"
           onClick={generateLink}
         />
-        <br />
+        {successMessage &&
+          <div className="successMessage">{successMessage}</div>
+        }
         <div className="formText">Get your shortened URL:</div>
         <input
           ref={inputRef}
