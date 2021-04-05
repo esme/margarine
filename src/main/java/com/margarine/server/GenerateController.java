@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Optional;
 import org.apache.tomcat.util.security.MD5Encoder;
 
 
@@ -73,6 +72,8 @@ public class GenerateController {
     // read or write from database using this object
     @Autowired private UrlRepository urlRepository;
 
+    @Autowired private DashboardController dashboardController;
+
 
     @RequestMapping(
             value = "/generate", method = RequestMethod.POST,
@@ -96,7 +97,7 @@ public class GenerateController {
         }
 
         // *STOP* if shortUrl already stored in DB
-        if (getShortUrl(shortUrl) != HttpStatus.NOT_FOUND) {
+        if (dashboardController.getShortUrl(shortUrl) != HttpStatus.NOT_FOUND) {
             LOGGER.error("KEY ALREADY EXISTS: PLEASE TRY A DIFFERENT URL.");
             return HttpStatus.ALREADY_REPORTED;
         }
@@ -146,7 +147,7 @@ public class GenerateController {
      */
     private String generateShortUrl (String originalUrl) {
 
-        if (getShortUrl(originalUrl) == originalUrl){
+        if (dashboardController.getShortUrl(originalUrl) == originalUrl){
             return "KEY_ALREADY_EXISTS";
         }
 
@@ -157,7 +158,7 @@ public class GenerateController {
             LOGGER.info("GENERATED 6 CHARACTER MD5 HASH FROM URL '" + originalUrl + "'.");
 
             // option2 - SHA1  (if hash collision)
-            if (getShortUrl(shortUrl) != HttpStatus.NOT_FOUND) {
+            if (dashboardController.getShortUrl(shortUrl) != HttpStatus.NOT_FOUND) {
                 // this is saying "if the shortUrl we just created already exists in the DB, and its not just a
                 // duplicate, then we have a hash collision", i.e. two originalUrl values hashed to the same value
                 String urlSha1Hash = MD5Encoder.encode(ConcurrentMessageDigest.digestSHA1(originalUrl.getBytes()));
@@ -171,70 +172,4 @@ public class GenerateController {
             return "";
         }
     }
-
-
-    /**
-     * Basic method for testing the server's ability to intake a payload as specified by the RequestBody annotation
-     * @param request Defines the payload that the server should echo
-     * @return Returns ACCEPTED if the test succeeded. Otherwise throws nonsense (heh).
-     */
-    @RequestMapping(
-            value = "/test/print", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE
-    )
-    public @ResponseBody HttpStatus testPrint(@RequestBody final UrlDTO request) {
-
-        try{
-            System.out.printf("ORIG_URL=%S\nLONGITUDE=%S\nLATITUDE=%S\nTIME_CLICKED=%S",
-                    request.getOriginalUrl(),
-                    request.getLongitude(),
-                    request.getLatitude(),
-                    request.getTimeClicked());
-
-            return HttpStatus.ACCEPTED;
-        }
-        catch (NullPointerException err) {
-
-            return HttpStatus.I_AM_A_TEAPOT;
-        }
-    }
-
-    /**
-     * Basic query method to fetch UrlItems from the database by index.
-     * e.g. Using a web browser: http://localhost:8080/get?short_url=af7335
-     * e.g. Using the HTTPie tool: http GET :8080 /get?short_url=af7335
-     * @param short_url Specifies the short_url that should be searched for
-     * @return Returns the UrlItem wrapped in JSON if it exists. Otherwise returns an HTTP error code.
-     */
-    @RequestMapping(value = "/get", method = RequestMethod.GET)
-    public @ResponseBody Object findByShortLink(@RequestParam String short_url) {
-
-        Optional<UrlItem> match = urlRepository.findById(short_url);
-        if (match.isPresent()) {
-            return match.get(); // returns a UrlItem wrapped in JSON if the document exists
-        }
-        else return HttpStatus.NOT_FOUND; // otherwise returns NOT_FOUND
-    }
-
-
-    /**
-     * Basic query method to fetch UrlItems from the database by index.
-     * e.g. Using a web browser: http://localhost:8080/get/af7335 --> returns {"originalUrl":"test0.com","shortUrl":"af7335-
-     *                                                                     ","numberOfClicks":1,"clicks":[null]}
-     * @param shortUrl This is a wildcard path variable that should correlate to the shortUrl the user is trying to fet-
-     *                 ch information on.
-     * @return Returns the UrlItem wrapped in JSON if it exists. Otherwise returns an HTTP error code.
-     */
-    @RequestMapping(value = "/get/{shortUrl}", method = RequestMethod.GET)
-    public @ResponseBody Object getShortUrl(@PathVariable("shortUrl") String shortUrl) {
-        LOGGER.info("Received request: /{shortUrl}");
-        LOGGER.info("getShortUrl > PathVariable 'shortUrl' = " + shortUrl);
-        Optional<UrlItem> match = urlRepository.findById(shortUrl);
-        if (match.isPresent()) {
-            return match.get(); // returns a UrlItem wrapped in JSON if the document exists
-        }
-        else return HttpStatus.NOT_FOUND; // otherwise returns NOT_FOUND
-    }
-
 }
