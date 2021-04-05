@@ -37,8 +37,10 @@ out/
 .vscode/
 
 ### static assets ###
-# src/main/resources/static/static/css/
-# src/main/resources/static/static/js/
-# src/main/resources/static/static/media/
-# src/main/resources/static/index.html
-# src/main/resources/static/asset-manifest.json
+src/main/resources/static/static/css/
+src/main/resources/static/static/js/
+src/main/resources/static/static/media/
+src/main/resources/static/index.html
+src/main/resources/static/manifest.json
+src/main/resources/static/asset-manifest.json
+src/main/resources/static/margarinelogo.png
