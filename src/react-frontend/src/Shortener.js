@@ -33,6 +33,8 @@ const Shortener = () => {
     setOriginalUrl("");
     setCompany("");
     setCustomUrl("");
+    setShortenedUrl("");
+    setSuccessMessage("");
   }
 
   const copyToClipboard = (e) => {
