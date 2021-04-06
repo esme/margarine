@@ -1,16 +1,15 @@
 package com.margarine.server;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margarine.db.ClickItem;
 import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
 import java.util.Date;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,20 +31,21 @@ public class ClickController {
 
         
         @JsonProperty(value = "longitude", required = true)
-        private long longitude;
+        private String longitude;
 
         
         @JsonProperty(value = "latitude", required = true)
-        private long latitude;
+        private String latitude;
         
         @JsonProperty(value = "timeClicked", required = true)
+        @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
         private Date timeClicked;
 
-        public long getLongitude() {
+        public String getLongitude() {
             return longitude;
         }
 
-        public long getLatitude() {
+        public String getLatitude() {
             return latitude;
         }
 
