@@ -70,8 +70,6 @@ public class ClickController {
     @RequestMapping(value = "/click/{shortUrl}")
     public Object clickShortUrl(@PathVariable("shortUrl") String shortUrl, @RequestBody ClickDTO request) {
 
-        System.out.println("TEST2");
-        
         //Finds a document in the database that matches the short url passed to the function. 
         Optional<UrlItem> match = urlRepository.findById(shortUrl);
         
@@ -82,13 +80,16 @@ public class ClickController {
         else{
             //Click Item is generated with the necessary information(location, time clicked)
             ClickItem clickItem = new ClickItem(request.getLongitude(), request.getLatitude(), request.getTimeClicked());
+
             //Url item fetched from the database for update purposes
             UrlItem urlItem = match.get();
+
             // Extract the original Url to redirect the user
             String originalUrl = urlItem.getOriginalUrl();
-            System.out.println("originalUrl = " + originalUrl);
+
             //Url item gets updated (click item is added to clicks array)
             urlItem.add(clickItem);
+
             //Database is saved after making the necessary update.
             urlRepository.save(urlItem);
             
