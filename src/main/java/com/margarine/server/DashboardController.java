@@ -1,6 +1,9 @@
 package com.margarine.server;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.margarine.db.ClickItem;
 import com.margarine.db.UrlItem;
@@ -14,17 +17,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
+
 
 @RestController
 public class DashboardController {
@@ -35,6 +37,9 @@ public class DashboardController {
 
     // log to spring boot console using this object
     private static final Logger LOGGER= LoggerFactory.getLogger(GenerateController.class);
+
+    private static File apiFile = new File("key.json");
+
 
     /**
      * Data transfer object class - specifies the required payload to use the reverseGeocode() function
@@ -208,12 +213,16 @@ public class DashboardController {
      */
     @RequestMapping(path = "/geocode/{address}", method = RequestMethod.GET)
     public GeocodeResult geocode(@PathVariable("address") String encodedAddress) throws IOException {
+
         OkHttpClient client = new OkHttpClient();
+
+        String apiKey = readJson(apiFile).get();
+        //LOGGER.info("API KEY = " + apiKey);
 
         Request request = new Request.Builder()
                 .url("https://google-maps-geocoding.p.rapidapi.com/geocode/json?address=" + encodedAddress)
                 .get()
-                .addHeader("x-rapidapi-key", "129514bae2mshb9121150050ff42p1a3075jsn7ca455f54fca")
+                .addHeader("x-rapidapi-key", apiKey)
                 .addHeader("x-rapidapi-host", "google-maps-geocoding.p.rapidapi.com")
                 .build();
 
@@ -253,10 +262,14 @@ public class DashboardController {
     private GeocodeResult computeReverseGeocode (String latitude, String longitude) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
+
+        String apiKey = readJson(apiFile).get();
+        //LOGGER.info("API KEY = " + apiKey);
+
         Request r = new Request.Builder()
                 .url("https://google-maps-geocoding.p.rapidapi.com/geocode/json?latlng=" + latitude + "%2C" + longitude + "&language=en")
                 .get()
-                .addHeader("x-rapidapi-key", "129514bae2mshb9121150050ff42p1a3075jsn7ca455f54fca")
+                .addHeader("x-rapidapi-key", apiKey)
                 .addHeader("x-rapidapi-host", "google-maps-geocoding.p.rapidapi.com")
                 .build();
 
@@ -326,6 +339,14 @@ public class DashboardController {
         }
         LOGGER.info("findMostCommonState > " + curMostFrequentState);
         return curMostFrequentState;
+    }
+
+    private ApiKey readJson(final File file) throws IOException {
+        final ObjectMapper mapper = new ObjectMapper(new JsonFactory()); // jackson databind
+        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        mapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY);
+        return mapper.readValue(file, ApiKey.class);
     }
 
 
