@@ -1,7 +1,6 @@
 package com.margarine.server;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.margarine.db.ClickItem;
 import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
 import org.apache.tomcat.util.security.ConcurrentMessageDigest;
@@ -26,10 +25,10 @@ public class GenerateController {
         private String originalUrl; // google.com
 
         @JsonProperty(value = "longitude", required = false)
-        private long longitude;
+        private String longitude;
 
         @JsonProperty(value = "latitude", required = false)
-        private long latitude;
+        private String latitude;
 
         @JsonProperty(value = "timeClicked", required = false)
         private Date timeClicked; // dd-MM-YYYY
@@ -45,11 +44,11 @@ public class GenerateController {
             return originalUrl;
         }
 
-        public long getLongitude() {
+        public String getLongitude() {
             return longitude;
         }
 
-        public long getLatitude() {
+        public String getLatitude() {
             return latitude;
         }
 
