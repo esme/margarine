@@ -70,6 +70,15 @@ public class DashboardController {
         @JsonProperty(value = "numberOfVisitorsToday", required = true)
         private String numberOfVisitorsToday;
 
+        @JsonProperty(value = "shortUrl", required = true)
+        private String shortUrl;
+
+        @JsonProperty(value = "originalUrl", required = true)
+        private String originalUrl;
+
+        @JsonProperty(value = "company", required = true)
+        private String company;
+
     }
 
     /**
@@ -178,6 +187,13 @@ public class DashboardController {
              * calculate "Number Of Clicks"
              * ********************************************/
             returnDTO.numberOfClicks = String.valueOf(match.get().getNumberOfClicks());
+
+            /* *********************************************
+             * capture default values
+             * ********************************************/
+            returnDTO.company = match.get().getCompany();
+            returnDTO.originalUrl = match.get().getOriginalUrl();
+            returnDTO.shortUrl = match.get().getShortUrl();
 
 
             // return the data transfer object to the front-end
