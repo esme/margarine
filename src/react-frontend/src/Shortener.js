@@ -38,11 +38,10 @@ const Shortener = () => {
   }
 
   const copyToClipboard = (e) => {
-    console.log(inputRef.current)
     inputRef.current.select()
     document.execCommand("copy")
     e.target.focus();
-    console.log('Copied!')
+    console.log(`Copied ${inputRef.current.value}!`)
   }
 
   return (
@@ -107,7 +106,9 @@ const Shortener = () => {
           ref={inputRef}
           className="inputRounded inputText"
           style={{width: '50%'}}
-          placeholder={`margarine.com/${shortenedUrl}`}
+          value={`margarine.com/${shortenedUrl}`}
+          onChange={setShortenedUrl}
+          readOnly="readOnly"
           type="text"
         />
         <input
