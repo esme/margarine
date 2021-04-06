@@ -1,16 +1,15 @@
 package com.margarine.server;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margarine.db.ClickItem;
 import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
 import java.util.Date;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,20 +31,21 @@ public class ClickController {
 
         
         @JsonProperty(value = "longitude", required = true)
-        private long longitude;
+        private String longitude;
 
         
         @JsonProperty(value = "latitude", required = true)
-        private long latitude;
+        private String latitude;
         
         @JsonProperty(value = "timeClicked", required = true)
+        @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
         private Date timeClicked;
 
-        public long getLongitude() {
+        public String getLongitude() {
             return longitude;
         }
 
-        public long getLatitude() {
+        public String getLatitude() {
             return latitude;
         }
 
@@ -70,8 +70,6 @@ public class ClickController {
     @RequestMapping(value = "/click/{shortUrl}")
     public Object clickShortUrl(@PathVariable("shortUrl") String shortUrl, @RequestBody ClickDTO request) {
 
-        System.out.println("TEST2");
-        
         //Finds a document in the database that matches the short url passed to the function. 
         Optional<UrlItem> match = urlRepository.findById(shortUrl);
         
@@ -82,13 +80,16 @@ public class ClickController {
         else{
             //Click Item is generated with the necessary information(location, time clicked)
             ClickItem clickItem = new ClickItem(request.getLongitude(), request.getLatitude(), request.getTimeClicked());
+
             //Url item fetched from the database for update purposes
             UrlItem urlItem = match.get();
+
             // Extract the original Url to redirect the user
             String originalUrl = urlItem.getOriginalUrl();
-            System.out.println("originalUrl = " + originalUrl);
+
             //Url item gets updated (click item is added to clicks array)
             urlItem.add(clickItem);
+
             //Database is saved after making the necessary update.
             urlRepository.save(urlItem);
             

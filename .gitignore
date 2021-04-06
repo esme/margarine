@@ -44,3 +44,6 @@ src/main/resources/static/index.html
 src/main/resources/static/manifest.json
 src/main/resources/static/asset-manifest.json
 src/main/resources/static/margarinelogo.png
+
+### google maps rapid_api key ###
+key.json

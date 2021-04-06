@@ -1,10 +1,8 @@
 package com.margarine.db;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Date;
 
 //@Document  // marks this class as defining a MongoDB document data model
@@ -15,20 +13,20 @@ public class ClickItem {
 
     @Id private String id;
     private Date timeClicked;
-    private long longitude;
-    private long latitude;
+    private String longitude;
+    private String latitude;
 
-    public ClickItem (long longitude, long latitude, Date timeClicked) {
+    public ClickItem (String longitude, String latitude, Date timeClicked) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.timeClicked = timeClicked;
     }
 
-    public long getLongitude () {
+    public String getLongitude () {
         return longitude;
     }
 
-    public long getLatitude () {
+    public String getLatitude () {
         return latitude;
     }
 

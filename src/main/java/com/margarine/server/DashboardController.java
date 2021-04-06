@@ -1,6 +1,9 @@
 package com.margarine.server;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.margarine.db.ClickItem;
 import com.margarine.db.UrlItem;
@@ -14,12 +17,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
-
+import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
+
 
 @RestController
 public class DashboardController {
@@ -30,6 +37,9 @@ public class DashboardController {
 
     // log to spring boot console using this object
     private static final Logger LOGGER= LoggerFactory.getLogger(GenerateController.class);
+
+    private static File apiFile = new File("key.json");
+
 
     /**
      * Data transfer object class - specifies the required payload to use the reverseGeocode() function
@@ -64,6 +74,15 @@ public class DashboardController {
 
         @JsonProperty(value = "numberOfVisitorsToday", required = true)
         private String numberOfVisitorsToday;
+
+        @JsonProperty(value = "shortUrl", required = true)
+        private String shortUrl;
+
+        @JsonProperty(value = "originalUrl", required = true)
+        private String originalUrl;
+
+        @JsonProperty(value = "company", required = true)
+        private String company;
 
     }
 
@@ -107,20 +126,83 @@ public class DashboardController {
         // perform dashboard metric computation if there was a match
         if (match.isPresent()) {
 
-            // TODO calculate "Date Last Accessed"
-            // (get curTime; iterate over clicks; match item.timeClicked with the smallest delta)
+            /* *********************************************
+             * calculate "Date Last Accessed"
+             * ********************************************/
             returnDTO.dateLastAccessed = match.get().getMostRecentClick().toString();
 
-            // calculate "Most Visitors From"
+
+            /* *********************************************
+             * calculate "Most Visitors From"
+             * ********************************************/
             try{
                 returnDTO.mostCommonState = findMostCommonState(match.get().getClicks());
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            // TODO calculate "Visitors Today"
+            /* *********************************************
+             * calculate "Visitors Today"
+             * ********************************************/
+            // counter
+            int numberOfVisitorsToday = 0;
 
-            return match.get(); // returns a UrlItem wrapped in JSON if the document exists
+            // get the current time
+            LocalDateTime preParsedTimeNow = LocalDateTime.now();
+
+            // format the current time - 2099-03-04T00:00:00.000+00:00
+            //DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            //dtf.format(preParsedTimeNow);
+
+            // finally, convert the current time to a Date object
+            Date now = java.sql.Timestamp.valueOf(preParsedTimeNow);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            simpleDateFormat.format(now);
+
+            LOGGER.info("CurrentTime: " + now);
+
+            // compare the current time to every ClickItem timestamp
+            for (ClickItem clickTime: match.get().getClicks()) {
+                Date timeClicked = clickTime.getTimeClicked();
+
+                LOGGER.info("ClickItem [" + clickTime.getId() + "] timeClicked = " + timeClicked);
+
+                // compute the difference between now and timeClicked
+                long diffInMillies = Math.abs(now.getTime() - timeClicked.getTime());
+
+                LOGGER.info("now.getTime() = " + now.getTime());
+                LOGGER.info("timeClicked.getTime() = " + timeClicked.getTime());
+                LOGGER.info("diffInMillies = " + diffInMillies);
+
+                long diffInHours = TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+                LOGGER.info("diffInHours > " + diffInHours);
+
+                // only increment the counter if timeDiff is less than or equal to 24 hours
+                if (diffInHours <= 24) {
+                    numberOfVisitorsToday++;
+                }
+            }
+            // done!
+            returnDTO.numberOfVisitorsToday = String.valueOf(numberOfVisitorsToday);
+
+            LOGGER.info("numberOfVisitorsToday = " + String.valueOf(numberOfVisitorsToday));
+
+            /* *********************************************
+             * calculate "Number Of Clicks"
+             * ********************************************/
+            returnDTO.numberOfClicks = String.valueOf(match.get().getNumberOfClicks());
+
+            /* *********************************************
+             * capture default values
+             * ********************************************/
+            returnDTO.company = match.get().getCompany();
+            returnDTO.originalUrl = match.get().getOriginalUrl();
+            returnDTO.shortUrl = match.get().getShortUrl();
+
+
+            // return the data transfer object to the front-end
+            return returnDTO; // returns a UrlItem wrapped in JSON if the document exists
         }
         else return HttpStatus.NOT_FOUND; // otherwise returns NOT_FOUND
     }
@@ -131,12 +213,16 @@ public class DashboardController {
      */
     @RequestMapping(path = "/geocode/{address}", method = RequestMethod.GET)
     public GeocodeResult geocode(@PathVariable("address") String encodedAddress) throws IOException {
+
         OkHttpClient client = new OkHttpClient();
+
+        String apiKey = readJson(apiFile).get();
+        //LOGGER.info("API KEY = " + apiKey);
 
         Request request = new Request.Builder()
                 .url("https://google-maps-geocoding.p.rapidapi.com/geocode/json?address=" + encodedAddress)
                 .get()
-                .addHeader("x-rapidapi-key", "129514bae2mshb9121150050ff42p1a3075jsn7ca455f54fca")
+                .addHeader("x-rapidapi-key", apiKey)
                 .addHeader("x-rapidapi-host", "google-maps-geocoding.p.rapidapi.com")
                 .build();
 
@@ -176,10 +262,14 @@ public class DashboardController {
     private GeocodeResult computeReverseGeocode (String latitude, String longitude) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
+
+        String apiKey = readJson(apiFile).get();
+        //LOGGER.info("API KEY = " + apiKey);
+
         Request r = new Request.Builder()
                 .url("https://google-maps-geocoding.p.rapidapi.com/geocode/json?latlng=" + latitude + "%2C" + longitude + "&language=en")
                 .get()
-                .addHeader("x-rapidapi-key", "129514bae2mshb9121150050ff42p1a3075jsn7ca455f54fca")
+                .addHeader("x-rapidapi-key", apiKey)
                 .addHeader("x-rapidapi-host", "google-maps-geocoding.p.rapidapi.com")
                 .build();
 
@@ -249,6 +339,14 @@ public class DashboardController {
         }
         LOGGER.info("findMostCommonState > " + curMostFrequentState);
         return curMostFrequentState;
+    }
+
+    private ApiKey readJson(final File file) throws IOException {
+        final ObjectMapper mapper = new ObjectMapper(new JsonFactory()); // jackson databind
+        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        mapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY);
+        return mapper.readValue(file, ApiKey.class);
     }
 
 
