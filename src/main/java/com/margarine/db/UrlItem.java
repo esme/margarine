@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 @Document(collection = "ShortUrls")  // marks this class as defining a MongoDB document data model
@@ -20,6 +21,7 @@ public class UrlItem {
     private int numberOfClicks;  // shortUrl total click counter
     private ArrayList<ClickItem> clicks;  // array of all clicks that match to shortUrl
     private String company;  // optional company name
+    private Date mostRecentClick;
 
 
     /** default constructor */
@@ -45,6 +47,7 @@ public class UrlItem {
 
     /** appends a new click item to the click array */
     public void add(ClickItem clickItem) {
+        mostRecentClick = clickItem.getTimeClicked();
         clicks.add(clickItem);
         numberOfClicks++;
     }

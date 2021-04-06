@@ -109,7 +109,7 @@ public class DashboardController {
 
             // TODO calculate "Date Last Accessed"
             // (get curTime; iterate over clicks; match item.timeClicked with the smallest delta)
-
+            returnDTO.dateLastAccessed = match.get().getMostRecentClick().toString();
 
             // calculate "Most Visitors From"
             try{

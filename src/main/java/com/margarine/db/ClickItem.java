@@ -32,7 +32,7 @@ public class ClickItem {
         return latitude;
     }
 
-    public String getTimeClicked () {
-        return timeClicked.toString();
+    public Date getTimeClicked () {
+        return timeClicked;
     }
 }
