@@ -9,12 +9,11 @@ async function getIP(){
 }
 
 async function sendData(latitude, longitude, timestamp) {
-  const ip_address = await getIP();
-  const data = {ip_address, latitude, longitude, timestamp};
+  const data = {latitude, longitude, timeClicked};
   console.log(1, data);
 
   // replace link with backend server API endpoint
-  fetch('http://localhost:3000/test', {
+  fetch(`http://localhost:8080/click/${window.location.pathname}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
