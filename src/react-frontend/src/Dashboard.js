@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useReducer, useState } from 'react';
+import moment from 'moment';
 import Graph from './Graph';
 import { REST_API_URL } from './api'
 
@@ -31,10 +32,14 @@ function Dashboard () {
     console.log('card data: ', res);
     
     if (res.data !== 'NOT_FOUND') {
-      setTotalClicks(res.data.totalClicks);
+      setTotalClicks(res.data.numberOfClicks);
       setMostVisitorsFrom(res.data.mostVisitorsFrom);
-      setDateLastAccessed(res.data.dateLastAccessed);
-      setClicksToday(res.data.clicksToday);
+      let dateFromData = moment(new Date(res.data.dateLastAccessed)).format('MM-DD-YY');
+      if (dateFromData === 'Invalid Date') {
+        dateFromData = 'N/A';
+      }
+      setDateLastAccessed(dateFromData);
+      setClicksToday(res.data.numberOfVisitorsToday);
     }
   }
 
@@ -42,10 +47,11 @@ function Dashboard () {
     const res = await axios.get(`${REST_API_URL}/get?short_url=${shortUrl}`);
     console.log('table data: ', res);
 
-    setMargarineLink(res.data.shortUrl);
+    setMargarineLink(`${REST_API_URL}/${shortUrl}`);
     if (res.data !== 'NOT_FOUND') {
       setOriginalLink(res.data.originalUrl)
-      res.data.dateCreated ? setDateCreated(res.data.dateCreated) : setDateCreated("N/A");
+      const dateFromData = res.data.dateCreated ? moment(new Date(res.data.dateCreated)).format('MM-DD-YY') : 'N/A';
+      setDateCreated(dateFromData);
     } else {
       setOriginalLink('NOT FOUND!');
     }
