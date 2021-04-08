@@ -13,8 +13,10 @@ function Dashboard () {
   const add = async () => {
     const res = await getMetrics();
     console.log('res', res);
-    setOriginalLink(res.data.originalUrl);
+
     setMargarineLink(res.data.shortUrl);
+    res.data === 'NOT_FOUND' ? setOriginalLink('NOT FOUND') : setOriginalLink(res.data.originalUrl);
+    res.data.dateCreated ? setDateCreated(res.data.dateCreated) : setDateCreated("N/A");
   }
 
   const getMetrics = async () => {
@@ -22,7 +24,7 @@ function Dashboard () {
     if (shortUrl.includes('/')) {
       shortUrl = shortUrl.split('/')[-1];
     }
-    const res = await axios.get(`${REST_API_URL}/get/short_url=${shortUrl}`);
+    const res = await axios.get(`${REST_API_URL}/get?short_url=${shortUrl}`);
     return res;
   }
 
