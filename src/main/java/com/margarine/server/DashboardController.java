@@ -131,8 +131,12 @@ public class DashboardController {
                 /* *********************************************
                  * calculate "Date Last Accessed"
                  * ********************************************/
-                returnDTO.dateLastAccessed = match.get().getMostRecentClick().toString();
-
+                if (match.get().getMostRecentClick() == null){
+                    returnDTO.dateLastAccessed = "N/A";
+                }
+                else{
+                    returnDTO.dateLastAccessed = match.get().getMostRecentClick().toString();
+                }
 
                 /* *********************************************
                  * calculate "Most Visitors From"
@@ -206,6 +210,7 @@ public class DashboardController {
             }catch (NullPointerException err){
                 // thrown if any accessors return null keys from the UrlItem. This can happen if the key was never
                 // initialized during /generate process.
+                LOGGER.error(err.getMessage());
                 return HttpStatus.INTERNAL_SERVER_ERROR;
             }
 
@@ -291,6 +296,12 @@ public class DashboardController {
 
     /** Analyze the clicks ArrayList to determine the most common location by state */
     private String findMostCommonState (ArrayList<ClickItem> clicks) throws IOException {
+
+        if (clicks.size() == 0){
+            return "N/A";
+        }
+
+
         String longitude;
         String latitude;
         ArrayList<String> states = new ArrayList<>();
