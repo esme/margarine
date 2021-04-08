@@ -9,23 +9,46 @@ function Dashboard () {
   const [margarineLink, setMargarineLink] = useState("https://margarine.com/Jon");
   const [originalLink, setOriginalLink] = useState("https://en.wikipedia.org/wiki/Jon");
   const [dateCreated, setDateCreated] = useState("11-04-2020");
+  const [totalClicks, setTotalClicks] = useState("786");
+  const [dateLastAccessed, setDateLastAccessed] = useState("2/24/21");
+  const [mostVisitorsFrom, setMostVisitorsFrom] = useState("MA");
+  const [clicksToday, setClicksToday] = useState("12");
 
-  const add = async () => {
-    const res = await getMetrics();
-    console.log('res', res);
-
-    setMargarineLink(res.data.shortUrl);
-    res.data === 'NOT_FOUND' ? setOriginalLink('NOT FOUND') : setOriginalLink(res.data.originalUrl);
-    res.data.dateCreated ? setDateCreated(res.data.dateCreated) : setDateCreated("N/A");
+  const add = () => {
+    cleanUpShortUrl();
+    addTableMetrics();
+    addCardMetrics();
   }
 
-  const getMetrics = async () => {
-    console.log(shortUrl);
+  const cleanUpShortUrl = () => {
     if (shortUrl.includes('/')) {
       shortUrl = shortUrl.split('/')[-1];
     }
+  }
+
+  const addCardMetrics = async () => {
+    const res = await axios.get(`${REST_API_URL}/get/${shortUrl}`);
+    console.log('card data: ', res);
+    
+    if (res.data !== 'NOT_FOUND') {
+      setTotalClicks(res.data.totalClicks);
+      setMostVisitorsFrom(res.data.mostVisitorsFrom);
+      setDateLastAccessed(res.data.dateLastAccessed);
+      setClicksToday(res.data.clicksToday);
+    }
+  }
+
+  const addTableMetrics = async () => {
     const res = await axios.get(`${REST_API_URL}/get?short_url=${shortUrl}`);
-    return res;
+    console.log('table data: ', res);
+
+    setMargarineLink(res.data.shortUrl);
+    if (res.data !== 'NOT_FOUND') {
+      setOriginalLink(res.data.originalUrl)
+      res.data.dateCreated ? setDateCreated(res.data.dateCreated) : setDateCreated("N/A");
+    } else {
+      setOriginalLink('NOT FOUND!');
+    }
   }
 
   return (
@@ -94,26 +117,26 @@ function Dashboard () {
             <div className="card">
               <div className="container">
                 <h4>Total Clicks</h4>
-                <h1>786</h1>
+                <h1>{totalClicks}</h1>
               </div>
             </div>
             <div className="card">
               <div className="container">
                 <h4>Date Last Accessed</h4>
-                <h1>2/24/21</h1>
+                <h1>{dateLastAccessed}</h1>
               </div>
             </div>
             <div className="card">
               <div className="container">
                 <h4>Most Visitors From</h4>
-                <h1>MA</h1>
+                <h1>{mostVisitorsFrom}</h1>
                 <p>USA</p>
               </div>
             </div>
             <div className="card">
               <div className="container">
                 <h4>Clicks Today</h4>
-                <h1>12</h1>
+                <h1>{clicksToday}</h1>
               </div>
             </div>
           </div>
