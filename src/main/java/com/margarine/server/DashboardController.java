@@ -126,80 +126,88 @@ public class DashboardController {
         // perform dashboard metric computation if there was a match
         if (match.isPresent()) {
 
-            /* *********************************************
-             * calculate "Date Last Accessed"
-             * ********************************************/
-            returnDTO.dateLastAccessed = match.get().getMostRecentClick().toString();
-
-
-            /* *********************************************
-             * calculate "Most Visitors From"
-             * ********************************************/
             try{
-                returnDTO.mostVisitorsFrom = findMostCommonState(match.get().getClicks());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
-            /* *********************************************
-             * calculate "Visitors Today"
-             * ********************************************/
-            // counter
-            int numberOfVisitorsToday = 0;
+                /* *********************************************
+                 * calculate "Date Last Accessed"
+                 * ********************************************/
+                returnDTO.dateLastAccessed = match.get().getMostRecentClick().toString();
 
-            // get the current time
-            LocalDateTime preParsedTimeNow = LocalDateTime.now();
 
-            // format the current time - 2099-03-04T00:00:00.000+00:00
-            //DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-            //dtf.format(preParsedTimeNow);
-
-            // finally, convert the current time to a Date object
-            Date now = java.sql.Timestamp.valueOf(preParsedTimeNow);
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            simpleDateFormat.format(now);
-
-            LOGGER.info("CurrentTime: " + now);
-
-            // compare the current time to every ClickItem timestamp
-            for (ClickItem clickTime: match.get().getClicks()) {
-                Date timeClicked = clickTime.getTimeClicked();
-
-                LOGGER.info("ClickItem [" + clickTime.getId() + "] timeClicked = " + timeClicked);
-
-                // compute the difference between now and timeClicked
-                long diffInMillies = Math.abs(now.getTime() - timeClicked.getTime());
-
-                LOGGER.info("now.getTime() = " + now.getTime());
-                LOGGER.info("timeClicked.getTime() = " + timeClicked.getTime());
-                LOGGER.info("diffInMillies = " + diffInMillies);
-
-                long diffInHours = TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-
-                LOGGER.info("diffInHours > " + diffInHours);
-
-                // only increment the counter if timeDiff is less than or equal to 24 hours
-                if (diffInHours <= 24) {
-                    numberOfVisitorsToday++;
+                /* *********************************************
+                 * calculate "Most Visitors From"
+                 * ********************************************/
+                try{
+                    returnDTO.mostVisitorsFrom = findMostCommonState(match.get().getClicks());
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+
+                /* *********************************************
+                 * calculate "Visitors Today"
+                 * ********************************************/
+                // counter
+                int numberOfVisitorsToday = 0;
+
+                // get the current time
+                LocalDateTime preParsedTimeNow = LocalDateTime.now();
+
+                // format the current time - 2099-03-04T00:00:00.000+00:00
+                //DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+                //dtf.format(preParsedTimeNow);
+
+                // finally, convert the current time to a Date object
+                Date now = java.sql.Timestamp.valueOf(preParsedTimeNow);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                simpleDateFormat.format(now);
+
+                LOGGER.info("CurrentTime: " + now);
+
+                // compare the current time to every ClickItem timestamp
+                for (ClickItem clickTime: match.get().getClicks()) {
+                    Date timeClicked = clickTime.getTimeClicked();
+
+                    LOGGER.info("ClickItem [" + clickTime.getId() + "] timeClicked = " + timeClicked);
+
+                    // compute the difference between now and timeClicked
+                    long diffInMillies = Math.abs(now.getTime() - timeClicked.getTime());
+
+                    LOGGER.info("now.getTime() = " + now.getTime());
+                    LOGGER.info("timeClicked.getTime() = " + timeClicked.getTime());
+                    LOGGER.info("diffInMillies = " + diffInMillies);
+
+                    long diffInHours = TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+                    LOGGER.info("diffInHours > " + diffInHours);
+
+                    // only increment the counter if timeDiff is less than or equal to 24 hours
+                    if (diffInHours <= 24) {
+                        numberOfVisitorsToday++;
+                    }
+                }
+                // done!
+                returnDTO.numberOfVisitorsToday = String.valueOf(numberOfVisitorsToday);
+
+                LOGGER.info("numberOfVisitorsToday = " + String.valueOf(numberOfVisitorsToday));
+
+                /* *********************************************
+                 * calculate "Number Of Clicks"
+                 * ********************************************/
+                returnDTO.numberOfClicks = String.valueOf(match.get().getNumberOfClicks());
+
+                /* *********************************************
+                 * capture default values
+                 * ********************************************/
+                returnDTO.company = match.get().getCompany();
+                returnDTO.originalUrl = match.get().getOriginalUrl();
+                returnDTO.shortUrl = match.get().getShortUrl();
+
+
+            }catch (NullPointerException err){
+                // thrown if any accessors return null keys from the UrlItem. This can happen if the key was never
+                // initialized during /generate process.
+                return HttpStatus.INTERNAL_SERVER_ERROR;
             }
-            // done!
-            returnDTO.numberOfVisitorsToday = String.valueOf(numberOfVisitorsToday);
-
-            LOGGER.info("numberOfVisitorsToday = " + String.valueOf(numberOfVisitorsToday));
-
-            /* *********************************************
-             * calculate "Number Of Clicks"
-             * ********************************************/
-            returnDTO.numberOfClicks = String.valueOf(match.get().getNumberOfClicks());
-
-            /* *********************************************
-             * capture default values
-             * ********************************************/
-            returnDTO.company = match.get().getCompany();
-            returnDTO.originalUrl = match.get().getOriginalUrl();
-            returnDTO.shortUrl = match.get().getShortUrl();
-
 
             // return the data transfer object to the front-end
             return returnDTO; // returns a UrlItem wrapped in JSON if the document exists
