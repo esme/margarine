@@ -2,9 +2,10 @@ import './App.css';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Dashboard from './Dashboard';
 import Shortener from './Shortener';
-import Background from './images/margarinebg.jpg'
-import Logo from './images/margarinelogo.png'
+import Background from './images/margarinebg.jpg';
+import Logo from './images/margarinelogo.png';
 import Graph from './Graph';
+import UserTracking from './UserTracking';
 
 function Header(props) {
   return (
@@ -33,7 +34,7 @@ function App() {
       >
         <BrowserRouter>
           <Switch>
-            <Route path="/dashboard">
+            <Route exact path="/dashboard">
               <Header>
                 <input
                   className="inputRounded inputButton inputDashboard"
@@ -44,7 +45,7 @@ function App() {
               </Header>
               <Dashboard />
             </Route>
-            <Route path="/">
+            <Route exact path="/">
               <Header>
                 <input
                   className="inputRounded inputButton inputDashboard"
@@ -54,6 +55,17 @@ function App() {
                 />
               </Header>
               <Shortener />
+            </Route>
+            <Route path="/">
+              <Header>
+                <input
+                  className="inputRounded inputButton inputDashboard"
+                  value="Homepage"
+                  type="button"
+                  onClick={() => window.location.href="/"}
+                />
+              </Header>
+              <UserTracking />
             </Route>
           </Switch>
         </BrowserRouter>
