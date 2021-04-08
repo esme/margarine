@@ -22,7 +22,8 @@ public class RouteController {
 
     @RequestMapping(value = "{_:^(?!index\\.html|dashboard|user-tracking.html).*$}")
     public String waitingPage() {
-        return "forward:/user-tracking/user-tracking.html";
+        return "forward:/index.html";
+        // return "forward:/user-tracking/user-tracking.html";
     }
 
     //    /** Wildcard route that redirects all root directory GET requests to index.html. Reason is app is an SPA. */
