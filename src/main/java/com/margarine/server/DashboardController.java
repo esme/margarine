@@ -8,6 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.margarine.db.ClickItem;
 import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
+import com.margarine.server.dto.Coordinate;
+import com.margarine.server.dto.CoordinatesDTO;
+import com.margarine.server.dto.DashboardMetricsDTO;
 import com.margarine.server.geocode.AddressComponent;
 import com.margarine.server.geocode.GeocodeObject;
 import com.margarine.server.geocode.GeocodeResult;
@@ -40,51 +43,6 @@ public class DashboardController {
 
     private static File apiFile = new File("key.json");
 
-
-    /**
-     * Data transfer object class - specifies the required payload to use the reverseGeocode() function
-     */
-    private static class CoordinatesDTO {
-
-        @JsonProperty(value = "longitude", required = true)
-        private String longitude;
-
-        @JsonProperty(value = "latitude", required = true)
-        private String latitude;
-
-        public String getLatitude() {
-            return latitude;
-        }
-
-        public String getLongitude() {
-            return longitude;
-        }
-    }
-
-    private static class DashboardMetricsDTO {
-
-        @JsonProperty(value = "numberOfClicks", required = true)
-        private String numberOfClicks;
-
-        @JsonProperty(value = "mostVisitorsFrom", required = true)
-        private String mostVisitorsFrom;
-
-        @JsonProperty(value = "dateLastAccessed", required = true)
-        private String dateLastAccessed;
-
-        @JsonProperty(value = "numberOfVisitorsToday", required = true)
-        private String numberOfVisitorsToday;
-
-        @JsonProperty(value = "shortUrl", required = true)
-        private String shortUrl;
-
-        @JsonProperty(value = "originalUrl", required = true)
-        private String originalUrl;
-
-        @JsonProperty(value = "company", required = true)
-        private String company;
-
-    }
 
     /**
      * Basic query method to fetch UrlItems from the database by index.
@@ -132,17 +90,17 @@ public class DashboardController {
                  * calculate "Date Last Accessed"
                  * ********************************************/
                 if (match.get().getMostRecentClick() == null){
-                    returnDTO.dateLastAccessed = "N/A";
+                    returnDTO.setDateLastAccessed("N/A");
                 }
                 else{
-                    returnDTO.dateLastAccessed = match.get().getMostRecentClick().toString();
+                    returnDTO.setDateLastAccessed(match.get().getMostRecentClick().toString());
                 }
 
                 /* *********************************************
                  * calculate "Most Visitors From"
                  * ********************************************/
                 try{
-                    returnDTO.mostVisitorsFrom = findMostCommonState(match.get().getClicks());
+                    returnDTO.setMostVisitorsFrom(findMostCommonState(match.get().getClicks()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -190,21 +148,21 @@ public class DashboardController {
                     }
                 }
                 // done!
-                returnDTO.numberOfVisitorsToday = String.valueOf(numberOfVisitorsToday);
+                returnDTO.setNumberOfVisitorsToday(String.valueOf(numberOfVisitorsToday));
 
                 LOGGER.info("numberOfVisitorsToday = " + String.valueOf(numberOfVisitorsToday));
 
                 /* *********************************************
                  * calculate "Number Of Clicks"
                  * ********************************************/
-                returnDTO.numberOfClicks = String.valueOf(match.get().getNumberOfClicks());
+                returnDTO.setNumberOfClicks(String.valueOf(match.get().getNumberOfClicks()));
 
                 /* *********************************************
                  * capture default values
                  * ********************************************/
-                returnDTO.company = match.get().getCompany();
-                returnDTO.originalUrl = match.get().getOriginalUrl();
-                returnDTO.shortUrl = match.get().getShortUrl();
+                returnDTO.setCompany(match.get().getCompany());
+                returnDTO.setOriginalUrl(match.get().getOriginalUrl());
+                returnDTO.setShortUrl(match.get().getShortUrl());
 
 
             }catch (NullPointerException err){
@@ -218,6 +176,67 @@ public class DashboardController {
             return returnDTO; // returns a UrlItem wrapped in JSON if the document exists
         }
         else return HttpStatus.NOT_FOUND; // otherwise returns NOT_FOUND
+    }
+
+
+    /**
+     * REST API method that returns CoordinatesDTO
+     */
+    @RequestMapping(value = "/get/{shortUrl}/coordinates", method = RequestMethod.GET)
+    public @org.springframework.web.bind.annotation.ResponseBody Object getClickCoordinates(@PathVariable("shortUrl") String shortUrl){
+        LOGGER.info("Received request: /{shortUrl}");
+        LOGGER.info("getShortUrl > PathVariable 'shortUrl' = " + shortUrl);
+
+        // locate the specified shortUrl in the database
+        Optional<UrlItem> match = urlRepository.findById(shortUrl);
+
+        // create placeholder for return object
+        CoordinatesDTO coordinatesDTO = new CoordinatesDTO();
+
+        /* *********************************************
+         * calculate "Most Visitors From"
+         * ********************************************/
+        if (match.isPresent()){
+
+            try{
+                for (ClickItem clickItem: match.get().getClicks()){
+                    String longitude = clickItem.getLongitude();
+                    String latitude = clickItem.getLatitude();
+                    String state = getState(longitude, latitude);
+                    Coordinate coordinate = new Coordinate(clickItem.getLatitude(), clickItem.getLongitude(), state);
+                    coordinatesDTO.add(coordinate);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return coordinatesDTO;
+    }
+
+
+    /**
+     * Method that computes the geolocation of a given set of coordinates and returns the state value as defined by
+     * Google Maps "administrative_area_level_1" API field
+     */
+    private String getState(String longitude, String latitude) throws IOException {
+
+        // reverse geocode the coordinates which are stored in the ClickItem
+        GeocodeResult location = computeReverseGeocode(latitude, longitude);
+
+        // we have to dig deep into the geolocation results to find the state...
+        // results.0.address_components.{item where types includes 'administrative_area_level_1'}.short_name
+        for (GeocodeObject g: location.getResults()) {
+            for (AddressComponent a: g.getAddressComponents()) {
+                LOGGER.info("findMostCommonState > AddressComponent > " + a.toString());
+                if (a.getTypes().contains("administrative_area_level_1")){
+                    return a.getShortName();
+                    // only need to grab the first occurrence of a state because google will return several approx.
+                    //locations. This is because long/lat reverse geo-coding only *approximates* to exact addresses.
+                }
+            }
+        }
+        return "N/A";
     }
 
 
@@ -245,19 +264,6 @@ public class DashboardController {
     }
 
 
-    /**
-     * Converts long/lat coordinates to human-readable addresses
-     */
-    @RequestMapping(path = "/geocode/reverse", method = RequestMethod.GET)
-    public GeocodeResult reverseGeocode (@RequestBody CoordinatesDTO request) throws IOException {
-
-        String longitude = request.getLongitude();
-        String latitude = request.getLatitude();
-
-        return computeReverseGeocode(longitude, latitude);
-    }
-
-
 
     /**
      * Converts long/lat coordinates to human-readable addresses
@@ -272,6 +278,10 @@ public class DashboardController {
     }
 
 
+
+    /**
+     * Reverse maps a set of coordinates to approximate addresses using Google Maps API
+     */
     private GeocodeResult computeReverseGeocode (String latitude, String longitude) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
@@ -294,13 +304,15 @@ public class DashboardController {
     }
 
 
-    /** Analyze the clicks ArrayList to determine the most common location by state */
+
+    /**
+     * Analyze the clicks ArrayList to determine the most common location by state
+     */
     private String findMostCommonState (ArrayList<ClickItem> clicks) throws IOException {
 
         if (clicks.size() == 0){
             return "N/A";
         }
-
 
         String longitude;
         String latitude;
@@ -312,24 +324,7 @@ public class DashboardController {
             latitude = String.valueOf(elem.getLatitude());
 
             // reverse geocode the coordinates which are stored in the ClickItem
-            GeocodeResult location = computeReverseGeocode(latitude, longitude);
-
-            // we have to dig deep into the geolocation results to find the state...
-            // results.0.address_components.{item where types includes 'administrative_area_level_1'}.short_name
-            outer:
-            for (GeocodeObject g: location.getResults()) {
-                for (AddressComponent a: g.getAddressComponents()) {
-                    LOGGER.info("findMostCommonState > AddressComponent > " + a.toString());
-                    if (a.getTypes().contains("administrative_area_level_1")){
-                        states.add(a.getShortName());
-                        break outer;
-                        // only need to grab the first occurrence of a state because google will return several approx.
-                        //locations. This is because long/lat reverse geo-coding only *approximates* to exact addresses.
-                    }
-                }
-            }
-            // keep going until all of the clicks have been analyzed (reverse geo-coded and parsed for 2-char
-            // state code (e.g., MA, NH, NY, etc.)
+            states.add(getState(longitude, latitude));
         }
         // all clicks have been analyzed!
 
@@ -360,6 +355,11 @@ public class DashboardController {
         return curMostFrequentState;
     }
 
+
+
+    /**
+     * Method is used to read in the Google Maps API key from key.json
+     */
     private ApiKey readJson(final File file) throws IOException {
         final ObjectMapper mapper = new ObjectMapper(new JsonFactory()); // jackson databind
         mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
@@ -367,7 +367,5 @@ public class DashboardController {
         mapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY);
         return mapper.readValue(file, ApiKey.class);
     }
-
-
 
 }
