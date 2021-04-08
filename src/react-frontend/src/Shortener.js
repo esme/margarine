@@ -1,10 +1,8 @@
 import axios from 'axios';
 import { useState, useRef } from 'react';
-
+import { REST_API_URL } from './api';
 
 const Shortener = () => {
-  const REST_API_URL = 'http://localhost:8080';
-
   const [originalUrl, setOriginalUrl] = useState("");
   const [company, setCompany] = useState("");
   const [customUrl, setCustomUrl] = useState("");

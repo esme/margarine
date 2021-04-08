@@ -1,15 +1,29 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 import Graph from './Graph';
+import { REST_API_URL } from './api'
 
 function Dashboard () {
-  const REST_API_URL = 'http://localhost:8080';
-
-  const [shortUrl, setShortUrl] = useState("");
+  let [shortUrl, setShortUrl] = useState("");
   const [company, setCompany] = useState("");
-  const sendShortUrl = async () => {
-    const res = await axios.get(REST_API_URL);
-    console.log(res.data.content);
+  const [margarineLink, setMargarineLink] = useState("https://margarine.com/Jon");
+  const [originalLink, setOriginalLink] = useState("https://en.wikipedia.org/wiki/Jon");
+  const [dateCreated, setDateCreated] = useState("11-04-2020");
+
+  const add = async () => {
+    const res = await getMetrics();
+    console.log('res', res);
+    setOriginalLink(res.data.originalUrl);
+    setMargarineLink(res.data.shortUrl);
+  }
+
+  const getMetrics = async () => {
+    console.log(shortUrl);
+    if (shortUrl.includes('/')) {
+      shortUrl = shortUrl.split('/')[-1];
+    }
+    const res = await axios.get(`${REST_API_URL}/get/short_url=${shortUrl}`);
+    return res;
   }
 
   return (
@@ -31,7 +45,7 @@ function Dashboard () {
               style={{width: '25%'}}
               value="Add"
               type="button"
-              onClick={sendShortUrl}
+              onClick={add}
             />
           </div>
           <div className="form-text"
@@ -69,14 +83,11 @@ function Dashboard () {
               <th style={{borderTopRightRadius: '10px'}}>Date Created</th>
             </tr>
             <tr>
-              <td>https://en.wikipedia.org/wiki/Snow</td>
-              <td>https://en.wikipedia.org/wiki/Jon</td>
-              <td>11-11-2001</td>
+              <td>{margarineLink}</td>
+              <td>{originalLink}</td>
+              <td>{dateCreated}</td>
             </tr>
           </table>
-          {/* <div style={{ height: 400, width: '80%', margin: '25px auto 0 auto' }} className={classes.root}>
-            <DataGrid rows={rows} columns={columns} pageSize={5} />
-          </div> */}
           <div className="card-container">
             <div className="card">
               <div className="container">
