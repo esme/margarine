@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import org.apache.tomcat.util.security.MD5Encoder;
@@ -110,8 +113,16 @@ public class GenerateController {
         //         + ", LONGITUDE: " + clickItem.getLongitude()
         //         + ", CLICK_TIME: " + clickItem.getTimeClicked());
 
+        // get the current time
+        LocalDateTime preParsedTimeNow = LocalDateTime.now();
+
+        // convert the current time to a Date object
+        Date now = java.sql.Timestamp.valueOf(preParsedTimeNow);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        simpleDateFormat.format(now);
+
         // create the UrlItem to store in DB
-        UrlItem urlItem = new UrlItem(request.getOriginalUrl(), shortUrl);
+        UrlItem urlItem = new UrlItem(request.getOriginalUrl(), shortUrl, now);
         LOGGER.info("CREATED NEW URL_ITEM { " + urlItem.toString() + " }.");
 
         // set the company if the parameter was included in the DTO

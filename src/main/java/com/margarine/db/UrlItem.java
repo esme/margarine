@@ -22,25 +22,19 @@ public class UrlItem {
     private ArrayList<ClickItem> clicks;  // array of all clicks that match to shortUrl
     private String company;  // optional company name
     private Date mostRecentClick;
+    private Date dateCreated;
 
 
     /** default constructor */
-    public UrlItem(String originalUrl, String shortUrl){
+    public UrlItem(String originalUrl, String shortUrl, Date dateCreated){
         this.originalUrl = originalUrl;
         this.shortUrl = shortUrl;
         numberOfClicks = 0;
         clicks = new ArrayList<>();
+        this.dateCreated = dateCreated;
     }
 
-    /** overloaded constructor that allows optional company param */
-    public UrlItem(String originalUrl, String shortUrl, String company){
-        this.originalUrl = originalUrl;
-        this.shortUrl = shortUrl;
-        this.company = company;
-        numberOfClicks = 0;
-        clicks = new ArrayList<>();
-    }
-
+    /** mutator method for company */
     public void setCompany (String company) {
         this.company = company;
     }
