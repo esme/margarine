@@ -66,8 +66,8 @@ public class DashboardController {
         @JsonProperty(value = "numberOfClicks", required = true)
         private String numberOfClicks;
 
-        @JsonProperty(value = "mostCommonState", required = true)
-        private String mostCommonState;
+        @JsonProperty(value = "mostVisitorsFrom", required = true)
+        private String mostVisitorsFrom;
 
         @JsonProperty(value = "dateLastAccessed", required = true)
         private String dateLastAccessed;
@@ -136,7 +136,7 @@ public class DashboardController {
              * calculate "Most Visitors From"
              * ********************************************/
             try{
-                returnDTO.mostCommonState = findMostCommonState(match.get().getClicks());
+                returnDTO.mostVisitorsFrom = findMostCommonState(match.get().getClicks());
             } catch (IOException e) {
                 e.printStackTrace();
             }
