@@ -203,7 +203,7 @@ public class DashboardController {
                     Float longitude = clickItem.getLongitude();
                     Float latitude = clickItem.getLatitude();
                     String state = getState(longitude, latitude);
-                    Coordinate coordinate = new Coordinate(clickItem.getLatitude(), clickItem.getLongitude(), state);
+                    Coordinate coordinate = new Coordinate(clickItem.getLatitude(), clickItem.getLongitude(), state, clickItem.getTimeClicked());
                     coordinatesDTO.add(coordinate);
                 }
             } catch (IOException e) {
