@@ -4,24 +4,27 @@ import moment from 'moment';
 import Graph from './Graph';
 import { REST_API_URL } from './api'
 
+const coords = [
+  { "state": "CA", "latitude": 36.778259, "longitude": -119.417931, "timeClicked": moment().format("YYYY-MM-DD[T]HH:mm:ss")},
+  { "state": "CA", "latitude": 36.8259, "longitude": -119.31, "timeClicked": "2021-03-09T12:52:03" },
+  { "state": "CA", "latitude": 36.259, "longitude": -119.7931, "timeClicked": "2021-02-09T12:52:03" },
+  { "state": "MA", "latitude": 42.4072, "longitude": -71.3824, "timeClicked": "2021-01-09T12:52:03" },
+  { "state": "MA", "latitude": 42.2, "longitude": -71.824, "timeClicked": "2021-01-09T12:52:03" },
+  { "state": "MA", "latitude": 42.72, "longitude": -71.24, "timeClicked": "2021-03-09T12:52:03" },
+  { "state": "NY", "latitude": 40.74072, "longitude": -74.03824, "timeClicked": "2021-02-09T12:52:03" },
+];
+
 function Dashboard () {
   let [shortUrl, setShortUrl] = useState("");
   const [company, setCompany] = useState("");
-  const [margarineLink, setMargarineLink] = useState("https://margarine.com/Jon");
-  const [originalLink, setOriginalLink] = useState("https://en.wikipedia.org/wiki/Jon");
-  const [dateCreated, setDateCreated] = useState("11-04-2020");
-  const [totalClicks, setTotalClicks] = useState("786");
-  const [dateLastAccessed, setDateLastAccessed] = useState("2/24/21");
+  const [margarineLink, setMargarineLink] = useState(`${REST_API_URL}/goo123`);
+  const [originalLink, setOriginalLink] = useState("https://google.com");
+  const [dateCreated, setDateCreated] = useState(moment().format('MM-DD-YYYY'));
+  const [totalClicks, setTotalClicks] = useState(coords.length);
+  const [dateLastAccessed, setDateLastAccessed] = useState(moment(new Date(coords[0].timeClicked)).format('MM/DD/YY'));
   const [mostVisitorsFrom, setMostVisitorsFrom] = useState("MA");
-  const [clicksToday, setClicksToday] = useState("12");
-  const [coordinates, setCoordinates] = useState([
-    { "state": "CA", "latitude": 36.778259, "longitude": -119.417931, "timeClicked": "2021-04-10T12:52:03" },
-    { "state": "CA", "latitude": 36.8259, "longitude": -119.31, "timeClicked": "2021-04-09T12:52:03" },
-    { "state": "CA", "latitude": 36.259, "longitude": -119.7931, "timeClicked": "2021-02-09T12:52:03" },
-    { "state": "MA", "latitude": 42.4072, "longitude": -71.3824, "timeClicked": "2021-04-09T12:52:03" },
-    { "state": "MA", "latitude": 42.2, "longitude": -71.824, "timeClicked": "2021-01-09T12:52:03" },
-    { "state": "MA", "latitude": 42.72, "longitude": -71.24, "timeClicked": "2021-03-09T12:52:03" },
-  ]);
+  const [clicksToday, setClicksToday] = useState(1);
+  const [coordinates, setCoordinates] = useState(coords);
 
   const add = () => {
     cleanUpShortUrl();
@@ -43,7 +46,7 @@ function Dashboard () {
     if (res.data !== 'NOT_FOUND') {
       setTotalClicks(res.data.numberOfClicks);
       setMostVisitorsFrom(res.data.mostVisitorsFrom);
-      let dateFromData = moment(new Date(res.data.dateLastAccessed)).format('MM-DD-YY');
+      let dateFromData = moment(new Date(res.data.dateLastAccessed)).format('MM/DD/YY');
       if (dateFromData === 'Invalid Date') {
         dateFromData = 'N/A';
       }

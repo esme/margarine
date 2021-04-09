@@ -19,9 +19,9 @@ class Graph extends Component {
       data: {
         coordinates: props.coordinates,
         minLat: 42.4072-5,
-        maxLat: 42.4072+5,
-        minLong: -71.3824-5,
-        maxLong: -71.3824+5
+        maxLat: 42.4072,
+        minLong: -71.3824-10,
+        maxLong: -71.3824
       }
     }
   }
@@ -39,7 +39,7 @@ class Graph extends Component {
         <div className="map">
           <MapContainer
             style={{ height: "420px", width: "80%", margin: '0 auto' }}
-            zoom={7}
+            zoom={6}
             center={[centerLat, centerLong]}
             bounds={[
               [data.minLat - bufferLat, data.minLong - bufferLong],
