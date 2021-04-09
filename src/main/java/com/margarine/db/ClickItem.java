@@ -5,28 +5,25 @@ import org.springframework.data.annotation.Id;
 
 import java.util.Date;
 
-//@Document  // marks this class as defining a MongoDB document data model
 @Data  // Lombok helper that save us from the drudgery of creating various getters, setters, and constructors.
-//@AllArgsConstructor  // Lombok helper ^
-//@NoArgsConstructor  // Lombok helper ^
 public class ClickItem {
 
     @Id private String id;
     private Date timeClicked;
-    private String longitude;
-    private String latitude;
+    private Float longitude;
+    private Float latitude;
 
-    public ClickItem (String longitude, String latitude, Date timeClicked) {
+    public ClickItem (Float longitude, Float latitude, Date timeClicked) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.timeClicked = timeClicked;
     }
 
-    public String getLongitude () {
+    public Float getLongitude () {
         return longitude;
     }
 
-    public String getLatitude () {
+    public Float getLatitude () {
         return latitude;
     }
 

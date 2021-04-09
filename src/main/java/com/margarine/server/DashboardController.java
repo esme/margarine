@@ -200,8 +200,8 @@ public class DashboardController {
 
             try{
                 for (ClickItem clickItem: match.get().getClicks()){
-                    String longitude = clickItem.getLongitude();
-                    String latitude = clickItem.getLatitude();
+                    Float longitude = clickItem.getLongitude();
+                    Float latitude = clickItem.getLatitude();
                     String state = getState(longitude, latitude);
                     Coordinate coordinate = new Coordinate(clickItem.getLatitude(), clickItem.getLongitude(), state);
                     coordinatesDTO.add(coordinate);
@@ -219,7 +219,7 @@ public class DashboardController {
      * Method that computes the geolocation of a given set of coordinates and returns the state value as defined by
      * Google Maps "administrative_area_level_1" API field
      */
-    private String getState(String longitude, String latitude) throws IOException {
+    private String getState(Float longitude, Float latitude) throws IOException {
 
         // reverse geocode the coordinates which are stored in the ClickItem
         GeocodeResult location = computeReverseGeocode(latitude, longitude);
@@ -271,8 +271,8 @@ public class DashboardController {
     @RequestMapping(path = "/geocode/reverse/{coordinates}", method = RequestMethod.GET)
     public GeocodeResult reverseGeocode (@PathVariable("coordinates") String request) throws IOException {
 
-        String longitude = request.split(",")[0];
-        String latitude = request.split(",")[1];
+        Float longitude = Float.parseFloat(request.split(",")[0]);
+        Float latitude = Float.parseFloat(request.split(",")[1]);
 
         return computeReverseGeocode(longitude, latitude);
     }
@@ -282,7 +282,7 @@ public class DashboardController {
     /**
      * Reverse maps a set of coordinates to approximate addresses using Google Maps API
      */
-    private GeocodeResult computeReverseGeocode (String latitude, String longitude) throws IOException {
+    private GeocodeResult computeReverseGeocode (Float latitude, Float longitude) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
 
@@ -314,14 +314,14 @@ public class DashboardController {
             return "N/A";
         }
 
-        String longitude;
-        String latitude;
+        Float longitude;
+        Float latitude;
         ArrayList<String> states = new ArrayList<>();
 
         // iterate over the ClickItems array and analyze it to determine the most common location by state
         for (ClickItem elem: clicks) {
-            longitude = String.valueOf(elem.getLongitude());
-            latitude = String.valueOf(elem.getLatitude());
+            longitude = elem.getLongitude();
+            latitude = elem.getLatitude();
 
             // reverse geocode the coordinates which are stored in the ClickItem
             states.add(getState(longitude, latitude));
