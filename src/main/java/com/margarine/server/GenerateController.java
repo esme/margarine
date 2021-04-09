@@ -1,8 +1,8 @@
 package com.margarine.server;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
+import com.margarine.server.dto.UrlDTO;
 import org.apache.tomcat.util.security.ConcurrentMessageDigest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -20,53 +19,6 @@ import org.apache.tomcat.util.security.MD5Encoder;
 
 @RestController
 public class GenerateController {
-
-    // specifies http request body that user most provide to invoke generate function
-    private static class UrlDTO {
-
-        @JsonProperty(value = "originalUrl", required = true)
-        private String originalUrl; // google.com
-
-        @JsonProperty(value = "longitude", required = false)
-        private String longitude;
-
-        @JsonProperty(value = "latitude", required = false)
-        private String latitude;
-
-        @JsonProperty(value = "timeClicked", required = false)
-        private Date timeClicked; // dd-MM-YYYY
-
-        @JsonProperty(value = "company", required = false)
-        private String company;
-
-        @JsonProperty(value = "shortUrl", required = false)
-        private String shortUrl;
-
-
-        public String getOriginalUrl() {
-            return originalUrl;
-        }
-
-        public String getLongitude() {
-            return longitude;
-        }
-
-        public String getLatitude() {
-            return latitude;
-        }
-
-        public Date getTimeClicked() {
-            return timeClicked;
-        }
-
-        public String getCompany() {
-            return company;
-        }
-
-        public String getShortUrl() {
-            return shortUrl;
-        }
-    }
 
     // log to spring boot console using this object
     private static final Logger LOGGER=LoggerFactory.getLogger(GenerateController.class);
