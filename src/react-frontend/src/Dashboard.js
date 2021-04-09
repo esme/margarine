@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useReducer, useState } from 'react';
+import { useState } from 'react';
 import moment from 'moment';
 import Graph from './Graph';
 import { REST_API_URL } from './api'
@@ -14,11 +14,20 @@ function Dashboard () {
   const [dateLastAccessed, setDateLastAccessed] = useState("2/24/21");
   const [mostVisitorsFrom, setMostVisitorsFrom] = useState("MA");
   const [clicksToday, setClicksToday] = useState("12");
+  const [coordinates, setCoordinates] = useState([
+    { "state": "CA", "latitude": 36.778259, "longitude": -119.417931, "timeClicked": "2021-04-10T12:52:03" },
+    { "state": "CA", "latitude": 36.8259, "longitude": -119.31, "timeClicked": "2021-04-09T12:52:03" },
+    { "state": "CA", "latitude": 36.259, "longitude": -119.7931, "timeClicked": "2021-02-09T12:52:03" },
+    { "state": "MA", "latitude": 42.4072, "longitude": -71.3824, "timeClicked": "2021-04-09T12:52:03" },
+    { "state": "MA", "latitude": 42.2, "longitude": -71.824, "timeClicked": "2021-01-09T12:52:03" },
+    { "state": "MA", "latitude": 42.72, "longitude": -71.24, "timeClicked": "2021-03-09T12:52:03" },
+  ]);
 
   const add = () => {
     cleanUpShortUrl();
     addTableMetrics();
     addCardMetrics();
+    addGraphMetrics();
   }
 
   const cleanUpShortUrl = () => {
@@ -55,6 +64,12 @@ function Dashboard () {
     } else {
       setOriginalLink('NOT FOUND!');
     }
+  }
+
+  const addGraphMetrics = async () => {
+    const res = await axios.get(`${REST_API_URL}/get/${shortUrl}/coordinates`);
+
+    setCoordinates(res.data.coordinates);
   }
 
   return (
@@ -108,16 +123,20 @@ function Dashboard () {
         <div className="dashboard">
           <h1 style={{textAlign: 'left', marginLeft: '10%'}}>Dashboard</h1>
           <table id="links-table">
-            <tr>
-              <th style={{borderTopLeftRadius: '10px'}}>Margarine Link</th>
-              <th>Original Link</th>
-              <th style={{borderTopRightRadius: '10px'}}>Date Created</th>
-            </tr>
-            <tr>
-              <td>{margarineLink}</td>
-              <td>{originalLink}</td>
-              <td>{dateCreated}</td>
-            </tr>
+            <thead>
+              <tr>
+                <th style={{borderTopLeftRadius: '10px'}}>Margarine Link</th>
+                <th>Original Link</th>
+                <th style={{borderTopRightRadius: '10px'}}>Date Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{margarineLink}</td>
+                <td>{originalLink}</td>
+                <td>{dateCreated}</td>
+              </tr>
+            </tbody>
           </table>
           <div className="card-container">
             <div className="card">
@@ -146,7 +165,7 @@ function Dashboard () {
               </div>
             </div>
           </div>
-          <Graph />
+          <Graph coordinates={coordinates} />
         </div>
       </div>
     </>
