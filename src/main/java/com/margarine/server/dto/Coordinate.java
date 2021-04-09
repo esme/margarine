@@ -13,12 +13,12 @@ public class Coordinate {
     private String state;
 
     @JsonProperty("longitude")
-    private String longitude;
+    private Float longitude;
 
     @JsonProperty("latitude")
-    private String latitude;
+    private Float latitude;
 
-    public Coordinate(String latitude, String longitude, String state) {
+    public Coordinate(Float latitude, Float longitude, String state) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.state = state;
