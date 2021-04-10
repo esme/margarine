@@ -19,7 +19,9 @@ const Shortener = () => {
       });
       console.log(res);
       if (res.data === 'CONFLICT') {
-        setSuccessMessage("Error! URL already exists in database.");
+        setSuccessMessage("Error! Your URL already exists in database.");
+      } else if (res.data === 'ALREADY_REPORTED') {
+        setSuccessMessage("Error! Your customized URL already exists in database.");
       } else {
         setSuccessMessage("Success!");
         setShortenedUrl(res.data.short_url);
