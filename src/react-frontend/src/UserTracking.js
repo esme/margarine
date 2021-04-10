@@ -54,6 +54,13 @@ const UserTracking = function() {
         console.log('Sending geolocation data: ', data);
         const res = await axios.post(`${REST_API_URL}/click/${shortUrl}`, data);
         console.log(res);
+        const [prefix, url] = res.data.split(":");
+        if (prefix === 'redirect') {
+          console.log(prefix, ' to: ', url);
+          window.location.href = 'http://' + url;
+        } else {
+          setError('shortUrl does not exist');
+        }
       } catch (e) {
         console.log(e);
       }
