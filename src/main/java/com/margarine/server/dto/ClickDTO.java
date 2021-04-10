@@ -22,4 +22,10 @@ public class ClickDTO {
     @JsonProperty(value = "timeClicked", required = true)
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date timeClicked;
+
+    public String toString() {
+
+        return (shortUrl == null) ? "longitude=" + longitude + ", latitude=" + latitude + ", timeClicked=" + timeClicked
+                : "shortUrl: " + shortUrl + ", longitude: " + longitude + ", latitude: " + latitude + ", timeClicked: " + timeClicked;
+    }
 }
