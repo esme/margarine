@@ -27,17 +27,37 @@ class Graph extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.coordinates && nextProps.coordinates && !this.areCoordinatesSame(this.props.coordinates, nextProps.coordinates)) {
-        console.log('this props: ', this.props);
-        console.log('next props: ', nextProps);
-        this.setState({
-          data: {...this.state.data, coordinates: [...nextProps.coordinates]}
-        });
-        return true;
+    if (
+      (this.props.coordinates.length === 0 && nextProps.coordinates.length === 0) &&
+      (this.state.data.coordinates.length === 0 && nextState.data.coordinates.length === 0)
+    ) {
+      return false;
     }
+
+    if (
+      this.areCoordinatesSame(this.props.coordinates, nextProps.coordinates)
+    ) {
+      if (this.areCoordinatesSame(this.state.data.coordinates, nextState.data.coordinates)) {
+        return false;
+      }
+    } else {
+      console.log('this props: ', this.props);
+      console.log('next props: ', nextProps);
+      this.setState({
+        data: {...this.state.data, coordinates: [...nextProps.coordinates]},
+      });
+    }
+
+    return true;
   }
 
   areCoordinatesSame(c1, c2) {
+    if (c1.length === 0 && c2.length === 0) {
+      return true;
+    }
+    if (c1.length !== c2.length) {
+      return false;
+    }
     if (c1[0].longitude !== c2[0].longitude || c1[0].latitude !== c2[0].latitude || c1[0].timeClicked !== c2[0].timeClicked) {
       return false;
     }
@@ -69,7 +89,7 @@ class Graph extends Component {
               return (
                 <Marker
                   position={[coordinate.latitude, coordinate.longitude]}
-                  key={k.toString() + " " + coordinate.latitude.toString() + coordinate.timeClicked}
+                  key={k.toString() + " " + coordinate.latitude.toString() + " " + coordinate.timeClicked}
                 >
                   <Popup>
                     {moment(new Date(coordinate.timeClicked)).format('MMM DD YYYY hh:mm:ss')}
