@@ -152,8 +152,17 @@ public class GenerateController {
     public @ResponseBody ServerInfoDTO whoAmI () throws UnknownHostException {
 
         ServerInfoDTO serverInfoDTO = new ServerInfoDTO();
-        serverInfoDTO.setIp(InetAddress.getLocalHost().getHostAddress());
-        serverInfoDTO.setName(environment.getProperty("java.rmi.server.hostname"));
+
+        // show hosting server IP
+        LOGGER.info("InetAddress.getLoopbackAddress().getHostAddress() --> " + InetAddress.getLoopbackAddress().getHostAddress());
+        serverInfoDTO.setIp(InetAddress.getLoopbackAddress().getHostAddress());
+
+        // get hosting server name
+        LOGGER.info("InetAddress.getLoopbackAddress().getHostName() --> " + InetAddress.getLoopbackAddress().getHostName());
+        serverInfoDTO.setName(InetAddress.getLoopbackAddress().getHostName());
+
+        //serverInfoDTO.setIp(InetAddress.getLocalHost().getHostAddress());
+        //serverInfoDTO.setName(environment.getProperty("java.rmi.server.hostname"));
 
         return serverInfoDTO;
     }
