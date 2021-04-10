@@ -19,7 +19,9 @@ const Shortener = () => {
       });
       console.log(res);
       if (res.data === 'CONFLICT') {
-        setSuccessMessage("Error! URL already exists in database.");
+        setSuccessMessage("Error! Your URL already exists in database.");
+      } else if (res.data === 'ALREADY_REPORTED') {
+        setSuccessMessage("Error! Your customized URL already exists in database.");
       } else {
         setSuccessMessage("Success!");
         setShortenedUrl(res.data.short_url);
@@ -75,7 +77,7 @@ const Shortener = () => {
           <input
             style={{width: '30%'}}
             className="inputRounded inputText"
-            value="margarine.com/"
+            value={REST_API_URL}
             type="text"
             disabled
           />
@@ -104,7 +106,7 @@ const Shortener = () => {
           ref={inputRef}
           className="inputRounded inputText"
           style={{width: '50%'}}
-          value={`margarine.com/${shortenedUrl}`}
+          value={`${REST_API_URL}/${shortenedUrl}`}
           onChange={setShortenedUrl}
           readOnly="readOnly"
           type="text"

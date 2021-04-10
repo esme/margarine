@@ -71,7 +71,7 @@ function Dashboard () {
 
   const addGraphMetrics = async () => {
     const res = await axios.get(`${REST_API_URL}/get/${shortUrl}/coordinates`);
-
+    console.log('graph data: ', res);
     setCoordinates(res.data.coordinates);
   }
 

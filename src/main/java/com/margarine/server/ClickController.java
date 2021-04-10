@@ -53,7 +53,7 @@ public class ClickController {
             //Database is saved after making the necessary update.
             urlRepository.save(urlItem);
             
-            return "redirect:http://" + originalUrl;
+            return "redirect:/" + originalUrl;
         }
         
     }
