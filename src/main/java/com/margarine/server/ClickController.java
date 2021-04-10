@@ -6,8 +6,9 @@ import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
 import java.util.Optional;
 import com.margarine.server.dto.ClickDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -23,6 +24,9 @@ public class ClickController {
     @Autowired
     private UrlRepository urlRepository;
 
+    // log to spring boot console using this object
+    private static final Logger LOGGER= LoggerFactory.getLogger(GenerateController.class);
+
 
     /**
      * Treat all routes as /{shortUrl} clicks except: '/', '/index.html, and '/dashboard'
@@ -30,11 +34,15 @@ public class ClickController {
     @RequestMapping(value = "/click/{shortUrl}")
     public String clickShortUrl(@PathVariable("shortUrl") String shortUrl, @RequestBody ClickDTO request) {
 
+        LOGGER.info("Received request: /click/{shortUrl}, shortUrl=" + shortUrl);
+        LOGGER.info("Executing ClickController.clickShortUrl(" + shortUrl + "), @RequestBody={" + request.toString() + "}");
+
         //Finds a document in the database that matches the short url passed to the function. 
         Optional<UrlItem> match = urlRepository.findById(shortUrl);
         
         //The document was not found in the database
         if(!match.isPresent()){
+            LOGGER.error("shortUrl" + shortUrl + " was not found in the database. Returning forward:/index.html.");
             return "forward:/index.html";
         }
         else{
@@ -52,8 +60,14 @@ public class ClickController {
 
             //Database is saved after making the necessary update.
             urlRepository.save(urlItem);
+
+            LOGGER.info("ClickItem recorded to ShortUrl Item!");
+
+            String redirect = "redirect:/" + originalUrl;
+
+            LOGGER.info("Redirecting user. Return " + redirect);
             
-            return "redirect:/" + originalUrl;
+            return redirect;
         }
         
     }
