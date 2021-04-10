@@ -2,14 +2,19 @@ package com.margarine.server;
 
 import com.margarine.db.UrlItem;
 import com.margarine.db.UrlRepository;
+import com.margarine.server.dto.ServerInfoDTO;
 import com.margarine.server.dto.UrlDTO;
 import org.apache.tomcat.util.security.ConcurrentMessageDigest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -27,6 +32,8 @@ public class GenerateController {
     @Autowired private UrlRepository urlRepository;
 
     @Autowired private DashboardController dashboardController;
+
+    @Autowired private Environment environment;
 
 
     @RequestMapping(
@@ -136,5 +143,18 @@ public class GenerateController {
             LOGGER.error(err.getMessage());
             return "";
         }
+    }
+
+    /**
+     * get the hosting server name and IP address after runtime
+     */
+    @RequestMapping(value = "/whoami", method = RequestMethod.GET)
+    public @ResponseBody ServerInfoDTO whoAmI () throws UnknownHostException {
+
+        ServerInfoDTO serverInfoDTO = new ServerInfoDTO();
+        serverInfoDTO.setIp(InetAddress.getLocalHost().getHostAddress());
+        serverInfoDTO.setName(environment.getProperty("java.rmi.server.hostname"));
+
+        return serverInfoDTO;
     }
 }
