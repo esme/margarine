@@ -27,12 +27,19 @@ class Graph extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    console.log('this props: ', this.props);
-    console.log('next props: ', nextProps);
-    if (this.props.coordinates[0].latitude !== nextProps.coordinates[0].latitude) {
+    if (this.props.coordinates && nextProps.coordinates && !this.areCoordinatesSame(this.props.coordinates, nextProps.coordinates)) {
+        console.log('this props: ', this.props);
+        console.log('next props: ', nextProps);
         this.setState({
-          data: {...this.state.data, coordinates: {...nextProps.coordinates}}
+          data: {...this.state.data, coordinates: [...nextProps.coordinates]}
         });
+        return true;
+    }
+  }
+
+  areCoordinatesSame(c1, c2) {
+    if (c1[0].longitude !== c2[0].longitude || c1[0].latitude !== c2[0].latitude || c1[0].timeClicked !== c2[0].timeClicked) {
+      return false;
     }
     return true;
   }
@@ -62,7 +69,7 @@ class Graph extends Component {
               return (
                 <Marker
                   position={[coordinate.latitude, coordinate.longitude]}
-                  key={k.toString() + coordinate.latitude.toString()}
+                  key={k.toString() + " " + coordinate.latitude.toString() + coordinate.timeClicked}
                 >
                   <Popup>
                     {moment(new Date(coordinate.timeClicked)).format('MMM DD YYYY hh:mm:ss')}
