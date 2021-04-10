@@ -77,7 +77,7 @@ const Shortener = () => {
           <input
             style={{width: '30%'}}
             className="inputRounded inputText"
-            value="margarine.com/"
+            value={REST_API_URL}
             type="text"
             disabled
           />
@@ -106,7 +106,7 @@ const Shortener = () => {
           ref={inputRef}
           className="inputRounded inputText"
           style={{width: '50%'}}
-          value={`margarine.com/${shortenedUrl}`}
+          value={`${REST_API_URL}/${shortenedUrl}`}
           onChange={setShortenedUrl}
           readOnly="readOnly"
           type="text"

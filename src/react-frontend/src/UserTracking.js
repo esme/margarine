@@ -54,10 +54,17 @@ const UserTracking = function() {
         console.log('Sending geolocation data: ', data);
         const res = await axios.post(`${REST_API_URL}/click/${shortUrl}`, data);
         console.log(res);
-        const [prefix, url] = res.data.split(":");
+        const str = res.data;
+        const i = res.data.indexOf(':');
+        const prefix = str.slice(0,i);
+        let url = str.slice(i+2);
         if (prefix === 'redirect') {
-          console.log(prefix, ' to: ', url);
-          window.location.href = 'http://' + url;
+          if (!url.includes('http')) {
+            url = 'http://' + url;
+          }
+          const urlObj = new URL(url);
+          console.log(urlObj);
+          window.location.href = urlObj.protocol + '//' + urlObj.host + urlObj.pathname;
         } else {
           setError('shortUrl does not exist');
         }
