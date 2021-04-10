@@ -26,6 +26,17 @@ class Graph extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('this props: ', this.props);
+    console.log('next props: ', nextProps);
+    if (this.props.coordinates[0].latitude !== nextProps.coordinates[0].latitude) {
+        this.setState({
+          data: {...this.state.data, coordinates: {...nextProps.coordinates}}
+        });
+    }
+    return true;
+  }
+
   render() {
     const { data } = this.state;
     var centerLat = (data.minLat + data.maxLat) / 2;
@@ -51,7 +62,7 @@ class Graph extends Component {
               return (
                 <Marker
                   position={[coordinate.latitude, coordinate.longitude]}
-                  key={k}
+                  key={k.toString() + coordinate.latitude.toString()}
                 >
                   <Popup>
                     {moment(new Date(coordinate.timeClicked)).format('MMM DD YYYY hh:mm:ss')}
