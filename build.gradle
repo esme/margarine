@@ -13,6 +13,10 @@ mainClassName = 'com.margarine.MargarineApplication' // for testing with fronten
 
 repositories {
 	mavenCentral()
+
+	maven  {
+           url 'https://repo.spring.io/libs-milestone'
+        }
 }
 
 dependencies {
@@ -45,6 +49,10 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.1.2'
+
+    implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '2.0.0'
+
+
 }
 
 test {
