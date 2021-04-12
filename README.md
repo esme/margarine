@@ -12,7 +12,10 @@ It will respond with a JSON representation of a greeting, as the following listi
 {"id":1,"content":"Hello, World!"}
 ```
 ## Running
-
+The MongoDB password needs to be passed as an environment variable in order to connect to the database:
+```
+export $JASYPT_ENCRYPTOR_PASSWORD=ENTER_PASSWORD_HERE
+```
 Spring Boot backend server
 ```
 ./gradlew bootRun
