@@ -47,3 +47,6 @@ src/main/resources/static/margarinelogo.png
 
 ### google maps rapid_api key ###
 key.json
+
+### mongodb key ###
+src/main/resources/application.properties
